@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup & Teardown | Fauji Docs</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+  <header>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <h1>Fauji Documentation</h1>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/docs/getting-started.html">Getting Started</a>
+      <a href="/docs/async-testing.html">Async Testing</a>
+      <a href="/docs/mock-functions.html">Mock Functions</a>
+      <a href="/docs/setup-teardown.html">Setup & Teardown</a>
+      <a href="/docs/using-matchers.html">Using Matchers</a>
+      <a href="/framework-guides/react.html">React</a>
+      <a href="/framework-guides/angular.html">Angular</a>
+      <a href="/framework-guides/vue.html">Vue</a>
+      <a href="/framework-guides/solid.html">Solid</a>
+    </nav>
+  </header>
+  <div class="container">
+    <nav class="sidebar">
+      <h2>Fauji Docs</h2>
+      <ul>
+        <li><a href="./getting-started.html">Getting Started</a></li>
+        <li><a href="./using-matchers.html">Using Matchers</a></li>
+        <li><a href="./async-testing.html">Async Testing</a></li>
+        <li><a href="./setup-teardown.html" class="active">Setup &amp; Teardown</a></li>
+        <li><a href="./mock-functions.html">Mock Functions</a></li>
+        <li><a href="../index.html">Home</a></li>
+      </ul>
+    </nav>
+    <main>
+      <h1>Setup &amp; Teardown</h1>
+      <section>
+        <h2>Test Hooks</h2>
+        <p>Fauji provides hooks to run setup and teardown logic before or after tests and suites. These are useful for initializing state, cleaning up resources, or resetting mocks.</p>
+        <ul>
+          <li><code>beforeAll(fn)</code>: Run once before all tests in a suite</li>
+          <li><code>afterAll(fn)</code>: Run once after all tests in a suite</li>
+          <li><code>beforeEach(fn)</code>: Run before each test in a suite</li>
+          <li><code>afterEach(fn)</code>: Run after each test in a suite</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Example</h2>
+        <pre><code class="language-js">describe('Array', () => {
+  let arr;
+
+  beforeAll(() => {
+    // Runs once before all tests
+    arr = [];
+  });
+
+  beforeEach(() => {
+    // Runs before each test
+    arr.push(1);
+  });
+
+  afterEach(() => {
+    // Runs after each test
+    arr.pop();
+  });
+
+  afterAll(() => {
+    // Runs once after all tests
+    arr = null;
+  });
+
+  test('length is 1 after push', () => {
+    expect(arr).toHaveLength(1);
+  });
+});
+</code></pre>
+      </section>
+      <section>
+        <h2>Tips</h2>
+        <ul>
+          <li>Hooks are scoped to the current <code>describe</code> block.</li>
+          <li>You can nest <code>describe</code> blocks for more granular setup/teardown.</li>
+          <li>Use hooks to reset state, mock timers, or clean up resources.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+  <footer>
+    <p>&copy; 2024 Fauji Testing Framework. All rights reserved.</p>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
+  </footer>
+</body>
+</html> 

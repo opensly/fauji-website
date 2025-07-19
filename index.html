@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fauji Testing Framework</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <link rel="stylesheet" href="./styles/main.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">
+        <img src="./assets/fauji.svg" alt="fauji">
+      </div>
+      <menu>
+        <li>
+          <a href="/docs/getting-started.html">Docs</a>
+        </li>
+        <li>
+          <a href="https://github.com/opensly/fauji" target="_blank">GitHub</a>
+        </li>
+      </menu>
+    </nav>
+  </header>
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <img src="./assets/fauji_mascot.png" alt="Fauji Mascot">
+        <div class="tagline">Fauji stands guard over your code. A lightweight JavaScript testing framework</div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+      <h2>Why Fauji?</h2>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-title">Zero Config</div>
+          <div class="feature-desc">Works out of the box. No setup or boilerplate required—just write tests and run them.</div>
+        </div>
+        <div class="feature feature-card-highlight1">
+          <div class="feature-title">Familiar API</div>
+          <div class="feature-desc">Familiar <code>describe</code>, <code>test</code>, <code>expect</code>, and hooks as globals. Minimal learning curve for developers.</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">Powerful Matchers</div>
+          <div class="feature-desc">Rich set of built-in matchers, async support, and easy custom matcher extension.</div>
+        </div>
+        <div class="feature feature-card-highlight2">
+          <div class="feature-title">Spies, Stubs &amp; Mocks</div>
+          <div class="feature-desc">Built-in utilities for spying, stubbing, and mocking functions and modules.</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">TypeScript Support</div>
+          <div class="feature-desc">Full typings and autocompletion for all matchers and APIs. Works seamlessly in TS projects.</div>
+        </div>
+        <div class="feature feature-card-highlight3">
+          <div class="feature-title">Watch Mode</div>
+          <div class="feature-desc">Rerun tests automatically on file changes for a fast feedback loop.</div>
+        </div>
+      </div>
+    </section>
+    <!-- GitHub Section -->
+    <section id="github">
+      <h2>Contribute</h2>
+      <p>Fauji is open source! Star us on <a href="https://github.com/opensly/fauji" target="_blank">GitHub</a> and join the community.</p>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2024 Fauji Testing Framework. All rights reserved.</p>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
+  </footer>
+</body>
+</html>

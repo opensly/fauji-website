@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testing Vue.js Apps with Fauji</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+  <header>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <h1>Fauji Documentation</h1>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/docs/getting-started.html">Getting Started</a>
+      <a href="/docs/async-testing.html">Async Testing</a>
+      <a href="/docs/mock-functions.html">Mock Functions</a>
+      <a href="/docs/setup-teardown.html">Setup & Teardown</a>
+      <a href="/docs/using-matchers.html">Using Matchers</a>
+      <a href="/framework-guides/react.html">React</a>
+      <a href="/framework-guides/angular.html">Angular</a>
+      <a href="/framework-guides/vue.html">Vue</a>
+      <a href="/framework-guides/solid.html">Solid</a>
+    </nav>
+  </header>
+  <main>
+    <nav style="margin-bottom:2em;">
+      <a href="../index.html">Home</a> |
+      <a href="../docs/getting-started.html">Docs</a>
+    </nav>
+    <h1>Testing Vue.js Apps with Fauji</h1>
+    <p><strong>Fauji</strong> is a lightweight, Jest-like testing framework for JavaScript/TypeScript. You can use it to test Vue components, composables, and utilities with a familiar API and fast feedback loop.</p>
+    <h2>1. Setup</h2>
+    <ul>
+      <li>Install Fauji as a dev dependency:</li>
+    </ul>
+    <pre><code class="language-bash">npm install --save-dev fauji</code></pre>
+    <ul>
+      <li>Ensure your test files are named with <code>.test.js</code> or <code>.test.ts</code> (or use your preferred pattern).</li>
+      <li>No need to import <code>describe</code>, <code>test</code>, <code>expect</code>, or hooks—they are available as globals.</li>
+    </ul>
+    <h2>2. Example: Testing a Vue Component</h2>
+    <pre><code class="language-html">// Counter.vue
+<template>
+  <button @click="increment">{{ count }}</button>
+</template>
+<script>
+export default {
+  data() { return { count: 0 }; },
+  methods: {
+    increment() { this.count++; }
+  }
+};
+</script>
+
+// Counter.test.js
+import { mount } from '@vue/test-utils';
+describe('Counter', () => {
+  test('increments count on click', () => {
+    const wrapper = mount(Counter);
+    wrapper.trigger('click');
+    expect(wrapper.text()).toBe('1');
+  });
+});
+
+run();
+</code></pre>
+    <h2>3. Example: Testing a Composable</h2>
+    <pre><code class="language-js">// useToggle.js
+import { ref } from 'vue';
+export function useToggle(initial = false) {
+  const on = ref(initial);
+  const toggle = () => (on.value = !on.value);
+  return { on, toggle };
+}
+
+// useToggle.test.js
+describe('useToggle', () => {
+  test('toggles value', () => {
+    const { on, toggle } = useToggle();
+    expect(on.value).toBe(false);
+    toggle();
+    expect(on.value).toBe(true);
+  });
+});
+
+run();
+</code></pre>
+    <h2>4. Using Matchers</h2>
+    <ul>
+      <li>Fauji provides <code>toBe</code>, <code>toEqual</code>, <code>toBeTruthy</code>, <code>toThrow</code>, and more. See the <a href="/docs/using-matchers.html">Matchers Guide</a>.</li>
+      <li>Async support: <code>await expect(Promise.resolve(5)).resolves.toBe(5)</code></li>
+    </ul>
+    <h2>5. Spies, Stubs, and Mocks</h2>
+    <pre><code class="language-js">const { spy, stub, mock } = require('fauji');
+
+describe('Spy example', () => {
+  test('tracks calls', () => {
+    const fn = spy((x) => x * 2);
+    fn(2);
+    expect(fn.callCount).toBe(1);
+    expect(fn.calls[0][0]).toBe(2);
+  });
+});
+</code></pre>
+    <h2>6. Running Tests</h2>
+    <pre><code class="language-bash">npx fauji --dir ./src --pattern test.js --watch</code></pre>
+    <ul>
+      <li>Use <code>--dir</code> to specify your test directory.</li>
+      <li>Use <code>--pattern</code> to match test files.</li>
+      <li>Use <code>--watch</code> for watch mode.</li>
+    </ul>
+    <h2>7. Vue-Specific Tips</h2>
+    <ul>
+      <li>Use <code>@vue/test-utils</code> for mounting and interacting with components.</li>
+      <li>Use Fauji's hooks (<code>beforeAll</code>, <code>beforeEach</code>, etc.) for setup/teardown.</li>
+      <li>Test composables by calling them directly and asserting with Fauji's matchers.</li>
+    </ul>
+    <h2>8. TypeScript Support</h2>
+    <ul>
+      <li>Fauji provides typings for all matchers and hooks. Works out of the box in Vue projects.</li>
+    </ul>
+    <p>See the <a href="../docs/getting-started.html">Getting Started</a> guide for more details.</p>
+  </main>
+  <footer>
+    <p>&copy; 2024 Fauji Testing Framework. All rights reserved.</p>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
+  </footer>
+</body>
+</html>
