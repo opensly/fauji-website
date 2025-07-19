@@ -390,7 +390,7 @@ ul li::before {
   content: '→';
   position: absolute;
   left: 0;
-  color: var(--primary-color);
+  color: #D97757;
   font-weight: bold;
   font-size: 1.1em;
 }
@@ -485,6 +485,10 @@ footer {
   }
 }
 
+.contribution-guide {
+  text-align: center;
+}
+
 .page-container {
   display: flex;
   flex-direction: row;
@@ -514,6 +518,14 @@ footer {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+.page-container .side-nav a {
+  color: #5e5d59;
+}
+
+.page-container .side-nav a.active {
+  color: #D97757;
 }
 
 .page-container .page-content {
