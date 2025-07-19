@@ -4,100 +4,122 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Async Testing | Fauji Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
   <link rel="stylesheet" href="../styles/main.css">
 </head>
 <body>
   <header>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <h1>Fauji Documentation</h1>
-    <nav>
-      <a href="/index.html">Home</a>
-      <a href="/docs/getting-started.html">Getting Started</a>
-      <a href="/docs/async-testing.html">Async Testing</a>
-      <a href="/docs/mock-functions.html">Mock Functions</a>
-      <a href="/docs/setup-teardown.html">Setup & Teardown</a>
-      <a href="/docs/using-matchers.html">Using Matchers</a>
-      <a href="/framework-guides/react.html">React</a>
-      <a href="/framework-guides/angular.html">Angular</a>
-      <a href="/framework-guides/vue.html">Vue</a>
-      <a href="/framework-guides/solid.html">Solid</a>
+    <nav aria-label="Sidebar navigation">
+      <div class="logo">
+        <img src="../assets/fauji.svg" alt="fauji">
+      </div>
+      <menu>
+        <li>
+          <a href="/docs/getting-started.html">Docs</a>
+        </li>
+        <li>
+          <a href="https://github.com/opensly/fauji" target="_blank">GitHub</a>
+        </li>
+      </menu>
     </nav>
   </header>
-  <div class="container">
-    <nav class="sidebar">
-      <h2>Fauji Docs</h2>
-      <ul>
-        <li><a href="getting-started.html">Getting Started</a></li>
-        <li><a href="using-matchers.html">Using Matchers</a></li>
-        <li><a href="async-testing.html" class="active">Async Testing</a></li>
-        <li><a href="setup-teardown.html">Setup &amp; Teardown</a></li>
-        <li><a href="mock-functions.html">Mock Functions</a></li>
-        <li><a href="/index.html">Home</a></li>
-      </ul>
-    </nav>
-    <main>
-      <h1>Async Testing</h1>
-      <section>
-        <h2>Testing Promises and Async Code</h2>
-        <p>Fauji supports async tests and matchers for promises. You can use <code>async</code>/<code>await</code> or return a promise from your test function.</p>
-        <pre><code class="language-js">test('resolves to 5', async () => {
-  await expect(Promise.resolve(5)).resolves.toBe(5);
-});
 
-test('rejects with error', async () => {
-  await expect(Promise.reject(new Error('fail'))).rejects.toThrow('fail');
-});
-</code></pre>
-      </section>
-      <section>
-        <h2>Async Matchers</h2>
+  <div class="page-container">
+    <aside>
+      <nav class="side-nav" aria-label="Sidebar navigation">
         <ul>
-          <li><code>resolves</code>: Asserts a promise resolves to a value</li>
-          <li><code>rejects</code>: Asserts a promise rejects with a value/error</li>
-          <li><code>toResolve</code>: Asserts a promise resolves (no value check)</li>
-          <li><code>toReject</code>: Asserts a promise rejects (no value check)</li>
+          <li><a href="/docs/getting-started.html">Getting Started</a></li>
+          <li><a href="/docs/using-matchers.html">Using Matchers</a></li>
+          <li><a href="/docs/async-testing.html" class="active">Async Testing</a></li>
+          <li><a href="/docs/setup-teardown.html">Setup & Teardown</a></li>
+          <li><a href="/docs/mock-functions.html">Mock Functions</a></li>
         </ul>
-        <pre><code class="language-js">// resolves
-await expect(Promise.resolve(42)).resolves.toBe(42);
-
-// rejects
-await expect(Promise.reject('fail')).rejects.toBe('fail');
-
-// toResolve
-await expect(Promise.resolve()).toResolve();
-
-// toReject
-await expect(Promise.reject()).toReject();
-</code></pre>
-      </section>
-      <section>
-        <h2>Async Test Functions</h2>
-        <p>You can use <code>async</code> functions or return a promise in your tests:</p>
-        <pre><code class="language-js">test('async/await example', async () => {
-  const data = await fetchData();
-  expect(data).toBeDefined();
-});
-
-test('promise example', () => {
-  return somePromise().then(result => {
-    expect(result).toBe(true);
-  });
-});
-</code></pre>
-      </section>
-      <section>
-        <h2>Tips</h2>
+        <h6>Framework Guides</h6>
         <ul>
-          <li>Always <code>await</code> or <code>return</code> the promise in your test to ensure Fauji waits for completion.</li>
-          <li>Use <code>resolves</code> and <code>rejects</code> for expressive async assertions.</li>
+          <li><a href="/framework-guides/react.html">React</a></li>
+          <li><a href="/framework-guides/angular.html">Angular</a></li>
+          <li><a href="/framework-guides/vue.html">Vue</a></li>
+          <li><a href="/framework-guides/solid.html">Solid</a></li>
         </ul>
-      </section>
-    </main>
+      </nav>
+    </aside>
+    <div class="page-content">
+      <div class="page-content-inner">
+        <h1>Async Testing</h1>
+        <section>
+          <h2>Testing Promises and Async Code</h2>
+          <p>Fauji supports async tests and matchers for promises. You can use <code>async</code>/<code>await</code> or return a promise from your test function.</p>
+          <pre>
+            <code class="language-js">
+              test('resolves to 5', async () => {
+                await expect(Promise.resolve(5)).resolves.toBe(5);
+            });
+
+            test('rejects with error', async () => {
+              await expect(Promise.reject(new Error('fail'))).rejects.toThrow('fail');
+            });
+            </code>
+          </pre>
+        </section>
+        <section>
+          <h2>Async Matchers</h2>
+          <ul>
+            <li><code>resolves</code>: Asserts a promise resolves to a value</li>
+            <li><code>rejects</code>: Asserts a promise rejects with a value/error</li>
+            <li><code>toResolve</code>: Asserts a promise resolves (no value check)</li>
+            <li><code>toReject</code>: Asserts a promise rejects (no value check)</li>
+          </ul>
+          <pre>
+            <code class="language-js">
+              // resolves
+              await expect(Promise.resolve(42)).resolves.toBe(42);
+
+              // rejects
+              await expect(Promise.reject('fail')).rejects.toBe('fail');
+
+              // toResolve
+              await expect(Promise.resolve()).toResolve();
+
+              // toReject
+              await expect(Promise.reject()).toReject();
+            </code>
+          </pre>
+        </section>
+        <section>
+          <h2>Async Test Functions</h2>
+          <p>You can use <code>async</code> functions or return a promise in your tests:</p>
+          <pre>
+            <code class="language-js">
+              test('async/await example', async () => {
+                const data = await fetchData();
+                expect(data).toBeDefined();
+              });
+
+              test('promise example', () => {
+                return somePromise().then(result => {
+                  expect(result).toBe(true);
+                });
+              });
+            </code>
+          </pre>
+        </section>
+        <section>
+          <h2>Tips</h2>
+          <ul>
+            <li>Always <code>await</code> or <code>return</code> the promise in your test to ensure Fauji waits for completion.</li>
+            <li>Use <code>resolves</code> and <code>rejects</code> for expressive async assertions.</li>
+          </ul>
+        </section>
+      </div>
+      <footer>
+        <p>Copyright <a target="_blank" href="https://opensly.in">Opensly</a> and <a target="_blank" href="https://github.com/opensly/fauji/graphs/contributors">fauji contributors</a>. All rights reserved.</p>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
+      </footer>
+    </div>
   </div>
-  <footer>
-    <p>&copy; 2024 Fauji Testing Framework. All rights reserved.</p>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
-  </footer>
 </body>
 </html> 

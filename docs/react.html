@@ -4,30 +4,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Testing React Apps with Fauji</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
   <link rel="stylesheet" href="../styles/main.css">
 </head>
 <body>
   <header>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <h1>Fauji Documentation</h1>
-    <nav>
-      <a href="/index.html">Home</a>
-      <a href="/docs/getting-started.html">Getting Started</a>
-      <a href="/docs/async-testing.html">Async Testing</a>
-      <a href="/docs/mock-functions.html">Mock Functions</a>
-      <a href="/docs/setup-teardown.html">Setup & Teardown</a>
-      <a href="/docs/using-matchers.html">Using Matchers</a>
-      <a href="/framework-guides/react.html">React</a>
-      <a href="/framework-guides/angular.html">Angular</a>
-      <a href="/framework-guides/vue.html">Vue</a>
-      <a href="/framework-guides/solid.html">Solid</a>
+    <nav aria-label="Sidebar navigation">
+      <div class="logo">
+        <img src="../assets/fauji.svg" alt="fauji">
+      </div>
+      <menu>
+        <li>
+          <a href="/docs/getting-started.html">Docs</a>
+        </li>
+        <li>
+          <a href="https://github.com/opensly/fauji" target="_blank">GitHub</a>
+        </li>
+      </menu>
     </nav>
   </header>
-  <main>
-    <nav style="margin-bottom:2em;">
-      <a href="../index.html">Home</a> |
-      <a href="../docs/getting-started.html">Docs</a>
-    </nav>
+
+  <div class="page-container">
+    <aside>
+      <nav class="side-nav" aria-label="Sidebar navigation">
+        <ul>
+          <li><a href="/docs/getting-started.html">Getting Started</a></li>
+          <li><a href="/docs/using-matchers.html">Using Matchers</a></li>
+          <li><a href="/docs/async-testing.html">Async Testing</a></li>
+          <li><a href="/docs/setup-teardown.html">Setup & Teardown</a></li>
+          <li><a href="/docs/mock-functions.html">Mock Functions</a></li>
+        </ul>
+        <h6>Framework Guides</h6>
+        <ul>
+          <li><a href="/framework-guides/angular.html">Angular</a></li>
+          <li><a href="/framework-guides/react.html" class="active">React</a></li>
+          <li><a href="/framework-guides/vue.html">Vue</a></li>
+          <li><a href="/framework-guides/solid.html">Solid</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <div class="page-content">
+      <div class="page-content-inner">
     <h1>Testing React Apps with Fauji</h1>
     <p><strong>Fauji</strong> is a lightweight, Jest-like testing framework for JavaScript/TypeScript. You can use it to test React components, hooks, and utilities with a familiar API and fast feedback loop.</p>
     <h2>1. Setup</h2>
@@ -117,11 +137,13 @@ describe('Spy example', () => {
       <li>Fauji provides typings for all matchers and hooks. Works out of the box in React projects.</li>
     </ul>
     <p>See the <a href="../docs/getting-started.html">Getting Started</a> guide for more details.</p>
-  </main>
-  <footer>
-    <p>&copy; 2024 Fauji Testing Framework. All rights reserved.</p>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
-  </footer>
+      </div>
+      <footer>
+        <p>Copyright <a target="_blank" href="https://opensly.in">Opensly</a> and <a target="_blank" href="https://github.com/opensly/fauji/graphs/contributors">fauji contributors</a>. All rights reserved.</p>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
+      </footer>
+    </div>
+  </div>
 </body>
 </html>

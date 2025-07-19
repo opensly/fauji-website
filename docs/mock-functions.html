@@ -4,88 +4,101 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mock Functions | Fauji Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
   <link rel="stylesheet" href="../styles/main.css">
 </head>
 <body>
   <header>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <h1>Fauji Documentation</h1>
-    <nav>
-      <a href="/index.html">Home</a>
-      <a href="/docs/getting-started.html">Getting Started</a>
-      <a href="/docs/async-testing.html">Async Testing</a>
-      <a href="/docs/mock-functions.html">Mock Functions</a>
-      <a href="/docs/setup-teardown.html">Setup & Teardown</a>
-      <a href="/docs/using-matchers.html">Using Matchers</a>
-      <a href="/framework-guides/react.html">React</a>
-      <a href="/framework-guides/angular.html">Angular</a>
-      <a href="/framework-guides/vue.html">Vue</a>
-      <a href="/framework-guides/solid.html">Solid</a>
+    <nav aria-label="Sidebar navigation">
+      <div class="logo">
+        <img src="../assets/fauji.svg" alt="fauji">
+      </div>
+      <menu>
+        <li>
+          <a href="/docs/getting-started.html">Docs</a>
+        </li>
+        <li>
+          <a href="https://github.com/opensly/fauji" target="_blank">GitHub</a>
+        </li>
+      </menu>
     </nav>
   </header>
-  <div class="container">
-    <nav class="sidebar">
-      <h2>Fauji Docs</h2>
-      <ul>
-        <li><a href="./getting-started.html">Getting Started</a></li>
-        <li><a href="./using-matchers.html">Using Matchers</a></li>
-        <li><a href="./async-testing.html">Async Testing</a></li>
-        <li><a href="./setup-teardown.html">Setup &amp; Teardown</a></li>
-        <li><a href="./mock-functions.html" class="active">Mock Functions</a></li>
-        <li><a href="../index.html">Home</a></li>
-      </ul>
-    </nav>
-    <main>
-      <h1>Mock Functions</h1>
-      <section>
-        <h2>Overview</h2>
-        <p>Fauji provides built-in utilities for spying, stubbing, and mocking functions and modules. These tools help you track calls, replace implementations, and isolate dependencies in your tests.</p>
-      </section>
-      <section>
-        <h2>Spies</h2>
-        <p>A <strong>spy</strong> wraps a function and tracks its calls and arguments.</p>
-        <pre><code class="language-js">const { spy } = require('fauji/matchers');
-const fn = spy();
-fn(1, 2);
-expect(fn.callCount).toBe(1);
-expect(fn.calls[0]).toEqual([1, 2]);
-</code></pre>
-        <div class="note">Spies can be used to verify how many times a function was called and with what arguments.</div>
-      </section>
-      <section>
-        <h2>Stubs</h2>
-        <p>A <strong>stub</strong> replaces an object's method with a spy, optionally with a custom implementation.</p>
-        <pre><code class="language-js">const obj = { greet: (name) => 'Hello ' + name };
-const { stub } = require('fauji/matchers');
-stub(obj, 'greet', (name) => 'Hi ' + name);
-expect(obj.greet('Sam')).toBe('Hi Sam');
-</code></pre>
-        <div class="note">Stubs can be restored to the original method using the <code>restore</code> method on the returned spy.</div>
-      </section>
-      <section>
-        <h2>Mocks</h2>
-        <p>A <strong>mock</strong> replaces a module's exports with a mock implementation.</p>
-        <pre><code class="language-js">const { mock } = require('fauji/matchers');
-const m = mock('./some-module', { foo: () => 42 });
-// ... use mocked module ...
-m.restore(); // Restore original
-</code></pre>
-        <div class="note">Mocks are useful for isolating dependencies and controlling module behavior in tests.</div>
-      </section>
-      <section>
-        <h2>Tips</h2>
+
+  <div class="page-container">
+    <aside>
+      <nav class="side-nav" aria-label="Sidebar navigation">
         <ul>
-          <li>Use spies to verify function calls and arguments.</li>
-          <li>Use stubs to replace methods for specific test scenarios.</li>
-          <li>Use mocks to isolate modules and control their exports.</li>
+          <li><a href="/docs/getting-started.html">Getting Started</a></li>
+          <li><a href="/docs/using-matchers.html">Using Matchers</a></li>
+          <li><a href="/docs/async-testing.html">Async Testing</a></li>
+          <li><a href="/docs/setup-teardown.html">Setup & Teardown</a></li>
+          <li><a href="/docs/mock-functions.html" class="active">Mock Functions</a></li>
         </ul>
-      </section>
-    </main>
+        <h6>Framework Guides</h6>
+        <ul>
+          <li><a href="/framework-guides/react.html">React</a></li>
+          <li><a href="/framework-guides/angular.html">Angular</a></li>
+          <li><a href="/framework-guides/vue.html">Vue</a></li>
+          <li><a href="/framework-guides/solid.html">Solid</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <div class="page-content">
+      <div class="page-content-inner">
+        <h1>Mock Functions</h1>
+        <section>
+          <h2>Overview</h2>
+          <p>Fauji provides built-in utilities for spying, stubbing, and mocking functions and modules. These tools help you track calls, replace implementations, and isolate dependencies in your tests.</p>
+        </section>
+        <section>
+          <h2>Spies</h2>
+          <p>A <strong>spy</strong> wraps a function and tracks its calls and arguments.</p>
+          <pre><code class="language-js">const { spy } = require('fauji/matchers');
+  const fn = spy();
+  fn(1, 2);
+  expect(fn.callCount).toBe(1);
+  expect(fn.calls[0]).toEqual([1, 2]);
+  </code></pre>
+          <div class="note">Spies can be used to verify how many times a function was called and with what arguments.</div>
+        </section>
+        <section>
+          <h2>Stubs</h2>
+          <p>A <strong>stub</strong> replaces an object's method with a spy, optionally with a custom implementation.</p>
+          <pre><code class="language-js">const obj = { greet: (name) => 'Hello ' + name };
+  const { stub } = require('fauji/matchers');
+  stub(obj, 'greet', (name) => 'Hi ' + name);
+  expect(obj.greet('Sam')).toBe('Hi Sam');
+  </code></pre>
+          <div class="note">Stubs can be restored to the original method using the <code>restore</code> method on the returned spy.</div>
+        </section>
+        <section>
+          <h2>Mocks</h2>
+          <p>A <strong>mock</strong> replaces a module's exports with a mock implementation.</p>
+          <pre><code class="language-js">const { mock } = require('fauji/matchers');
+  const m = mock('./some-module', { foo: () => 42 });
+  // ... use mocked module ...
+  m.restore(); // Restore original
+  </code></pre>
+          <div class="note">Mocks are useful for isolating dependencies and controlling module behavior in tests.</div>
+        </section>
+        <section>
+          <h2>Tips</h2>
+          <ul>
+            <li>Use spies to verify function calls and arguments.</li>
+            <li>Use stubs to replace methods for specific test scenarios.</li>
+            <li>Use mocks to isolate modules and control their exports.</li>
+          </ul>
+        </section>
+      </div>
+      <footer>
+        <p>Copyright <a target="_blank" href="https://opensly.in">Opensly</a> and <a target="_blank" href="https://github.com/opensly/fauji/graphs/contributors">fauji contributors</a>. All rights reserved.</p>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
+      </footer>
+    </div>
   </div>
-  <footer>
-    <p>&copy; 2024 Fauji Testing Framework. All rights reserved.</p>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
-  </footer>
 </body>
-</html> 
+</html>

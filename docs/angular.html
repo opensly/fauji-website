@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testing Angular Apps with Fauji</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+  <header>
+    <nav aria-label="Sidebar navigation">
+      <div class="logo">
+        <img src="../assets/fauji.svg" alt="fauji">
+      </div>
+      <menu>
+        <li>
+          <a href="/docs/getting-started.html">Docs</a>
+        </li>
+        <li>
+          <a href="https://github.com/opensly/fauji" target="_blank">GitHub</a>
+        </li>
+      </menu>
+    </nav>
+  </header>
+
+  <div class="page-container">
+    <aside>
+      <nav class="side-nav" aria-label="Sidebar navigation">
+        <ul>
+          <li><a href="/docs/getting-started.html">Getting Started</a></li>
+          <li><a href="/docs/using-matchers.html">Using Matchers</a></li>
+          <li><a href="/docs/async-testing.html">Async Testing</a></li>
+          <li><a href="/docs/setup-teardown.html">Setup & Teardown</a></li>
+          <li><a href="/docs/mock-functions.html">Mock Functions</a></li>
+        </ul>
+        <h6>Framework Guides</h6>
+        <ul>
+          <li><a href="/framework-guides/angular.html" class="active">Angular</a></li>
+          <li><a href="/framework-guides/react.html">React</a></li>
+          <li><a href="/framework-guides/vue.html">Vue</a></li>
+          <li><a href="/framework-guides/solid.html">Solid</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <div class="page-content">
+      <div class="page-content-inner">
+        <h1>Testing Angular Apps with Fauji</h1>
+        <p><strong>Fauji</strong> is a lightweight, Jest-like testing framework for JavaScript/TypeScript. You can use it to test Angular components, services, and utilities with a familiar API and fast feedback loop.</p>
+        <h2>1. Setup</h2>
+        <ul>
+          <li>Install Fauji as a dev dependency:</li>
+        </ul>
+        <pre><code class="language-bash">npm install --save-dev fauji</code></pre>
+        <ul>
+          <li>Ensure your test files are named with <code>.test.js</code> or <code>.test.ts</code> (or use your preferred pattern).</li>
+          <li>No need to import <code>describe</code>, <code>test</code>, <code>expect</code>, or hooks—they are available as globals.</li>
+        </ul>
+        <h2>2. Example: Testing an Angular Service</h2>
+        <pre><code class="language-ts">// math.service.ts
+    export class MathService {
+      add(a: number, b: number) { return a + b; }
+    }
+
+    // math.service.test.ts
+    describe('MathService', () => {
+      let service;
+      beforeAll(() => { service = new MathService(); });
+
+      test('adds numbers', () => {
+        expect(service.add(2, 3)).toBe(5);
+      });
+    });
+
+    run();</code></pre>
+        <h2>3. Example: Testing an Angular Component</h2>
+        <pre><code class="language-ts">// counter.component.ts
+    export class CounterComponent {
+      count = 0;
+      increment() { this.count++; }
+    }
+
+    // counter.component.test.ts
+    describe('CounterComponent', () => {
+      let comp;
+      beforeEach(() => { comp = new CounterComponent(); });
+
+      test('increments count', () => {
+        comp.increment();
+        expect(comp.count).toBe(1);
+      });
+    });
+
+    run();</code></pre>
+        <h2>4. Using Matchers</h2>
+        <ul>
+          <li>Fauji provides <code>toBe</code>, <code>toEqual</code>, <code>toBeTruthy</code>, <code>toThrow</code>, and more. See the <a href="/docs/using-matchers.html">Matchers Guide</a>.</li>
+          <li>Async support: <code>await expect(Promise.resolve(5)).resolves.toBe(5)</code></li>
+        </ul>
+        <h2>5. Spies, Stubs, and Mocks</h2>
+        <pre><code class="language-js">const { spy, stub, mock } = require('fauji');
+
+    describe('Spy example', () => {
+      test('tracks calls', () => {
+        const fn = spy((x) => x * 2);
+        fn(2);
+        expect(fn.callCount).toBe(1);
+        expect(fn.calls[0][0]).toBe(2);
+      });
+    });</code></pre>
+        <h2>6. Running Tests</h2>
+        <pre><code class="language-bash">npx fauji --dir ./src --pattern test.ts --watch</code></pre>
+        <ul>
+          <li>Use <code>--dir</code> to specify your test directory.</li>
+          <li>Use <code>--pattern</code> to match test files.</li>
+          <li>Use <code>--watch</code> for watch mode.</li>
+        </ul>
+        <h2>7. Angular-Specific Tips</h2>
+        <ul>
+          <li>For dependency injection, manually instantiate services or use Angular's <code>TestBed</code> if needed, then test with Fauji's matchers.</li>
+          <li>For DOM testing, use <code>@angular/platform-browser</code> utilities to query and interact with elements, then assert with Fauji.</li>
+          <li>Use Fauji's hooks (<code>beforeAll</code>, <code>beforeEach</code>, etc.) for setup/teardown.</li>
+        </ul>
+        <h2>8. TypeScript Support</h2>
+        <ul>
+          <li>Fauji provides typings for all matchers and hooks. Works out of the box in Angular projects.</li>
+        </ul>
+        <p>See the <a href="../docs/getting-started.html">Getting Started</a> guide for more details.</p>
+      </div>
+      <footer>
+        <p>Copyright <a target="_blank" href="https://opensly.in">Opensly</a> and <a target="_blank" href="https://github.com/opensly/fauji/graphs/contributors">fauji contributors</a>. All rights reserved.</p>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

@@ -4,85 +4,103 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Getting Started | Fauji Docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
   <link rel="stylesheet" href="../styles/main.css">
 </head>
 <body>
   <header>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <h1>Fauji Documentation</h1>
-    <nav>
-      <a href="/index.html">Home</a>
-      <a href="/docs/getting-started.html">Getting Started</a>
-      <a href="/docs/async-testing.html">Async Testing</a>
-      <a href="/docs/mock-functions.html">Mock Functions</a>
-      <a href="/docs/setup-teardown.html">Setup & Teardown</a>
-      <a href="/docs/using-matchers.html">Using Matchers</a>
-      <a href="/framework-guides/react.html">React</a>
-      <a href="/framework-guides/angular.html">Angular</a>
-      <a href="/framework-guides/vue.html">Vue</a>
-      <a href="/framework-guides/solid.html">Solid</a>
+    <nav aria-label="Sidebar navigation">
+      <div class="logo">
+        <img src="../assets/fauji.svg" alt="fauji">
+      </div>
+      <menu>
+        <li>
+          <a href="/docs/getting-started.html">Docs</a>
+        </li>
+        <li>
+          <a href="https://github.com/opensly/fauji" target="_blank">GitHub</a>
+        </li>
+      </menu>
     </nav>
   </header>
-  <div class="container">
-    <nav class="sidebar">
-      <h2>Fauji Docs</h2>
-      <ul>
-        <li><a href="./getting-started.html" class="active">Getting Started</a></li>
-        <li><a href="./using-matchers.html">Using Matchers</a></li>
-        <li><a href="./async-testing.html">Async Testing</a></li>
-        <li><a href="./setup-teardown.html">Setup &amp; Teardown</a></li>
-        <li><a href="./mock-functions.html">Mock Functions</a></li>
-        <li><a href="../index.html">Home</a></li>
-      </ul>
-    </nav>
-    <main>
-      <h1>Getting Started</h1>
-      <section>
-        <h2>Introduction</h2>
-        <p><strong>Fauji</strong> is a lightweight, zero-config testing framework for JavaScript and TypeScript. It provides Jest-like global APIs, powerful matchers, spies/stubs/mocks, and a simple CLI for running and watching tests. TypeScript users get full typings and autocompletion out of the box.</p>
-      </section>
-      <section>
-        <h2>Installation</h2>
-        <pre><code class="language-bash">npm install fauji --save-dev</code></pre>
-        <div class="note">No configuration required. Just write your tests and run them!</div>
-      </section>
-      <section>
-        <h2>First Test Example</h2>
-        <pre><code class="language-js">describe('Math', () => {
-  beforeAll(() => { /* setup */ });
-  beforeEach(() => { /* per-test setup */ });
 
-  test('adds', () => {
-    expect(1 + 1).toBe(2);
-  });
-
-  test('object equality', () => {
-    expect({ a: 1, b: 2 }).toEqual({ a: 1, b: 2 });
-  });
-
-  afterEach(() => { /* per-test teardown */ });
-  afterAll(() => { /* teardown */ });
-});
-
-run(); // Call at the end of your test file</code></pre>
-      </section>
-      <section>
-        <h2>Running Tests</h2>
-        <p>Use the CLI to run your tests:</p>
-        <pre><code class="language-bash">npx fauji --dir ./tests --pattern test.js --name math --watch</code></pre>
+  <div class="page-container">
+    <aside>
+      <nav class="side-nav" aria-label="Sidebar navigation">
         <ul>
-          <li><code>--dir</code> or <code>-d</code>: Test directory (default: current directory)</li>
-          <li><code>--pattern</code> or <code>-p</code>: Test file pattern (default: <code>test.js</code>)</li>
-          <li><code>--name</code> or <code>-n</code>: Filter test files by name</li>
-          <li><code>--watch</code> or <code>-w</code>: Watch mode (reruns tests on file changes)</li>
+          <li><a href="/docs/getting-started.html" class="active">Getting Started</a></li>
+          <li><a href="/docs/using-matchers.html">Using Matchers</a></li>
+          <li><a href="/docs/async-testing.html">Async Testing</a></li>
+          <li><a href="/docs/setup-teardown.html">Setup & Teardown</a></li>
+          <li><a href="/docs/mock-functions.html">Mock Functions</a></li>
         </ul>
-      </section>
-    </main>
+        <h6>Framework Guides</h6>
+        <ul>
+          <li><a href="/framework-guides/react.html">React</a></li>
+          <li><a href="/framework-guides/angular.html">Angular</a></li>
+          <li><a href="/framework-guides/vue.html">Vue</a></li>
+          <li><a href="/framework-guides/solid.html">Solid</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <div class="page-content">
+      <div class="page-content-inner">
+        <h1>Getting Started</h1>
+        <section>
+          <h2>Introduction</h2>
+          <p><strong>Fauji</strong> is a lightweight, zero-config testing framework for JavaScript and TypeScript. It provides Jest-like global APIs, powerful matchers, spies/stubs/mocks, and a simple CLI for running and watching tests. TypeScript users get full typings and autocompletion out of the box.</p>
+        </section>
+        <section>
+          <h2>Installation</h2>
+          <pre><code class="language-bash">npm install fauji --save-dev</code></pre>
+          <div class="note">No configuration required. Just write your tests and run them!</div>
+        </section>
+        <section>
+          <h2>First Test Example</h2>
+          <pre>
+            <code class="language-js">
+              describe('Math', () => {
+                beforeAll(() => { /* setup */ });
+                beforeEach(() => { /* per-test setup */ });
+
+                test('adds', () => {
+                  expect(1 + 1).toBe(2);
+                });
+
+                test('object equality', () => {
+                  expect({ a: 1, b: 2 }).toEqual({ a: 1, b: 2 });
+                });
+
+                afterEach(() => { /* per-test teardown */ });
+                afterAll(() => { /* teardown */ });
+              });
+
+              run(); // Call at the end of your test file
+            </code>
+          </pre>
+        </section>
+        <section>
+          <h2>Running Tests</h2>
+          <p>Use the CLI to run your tests:</p>
+          <pre><code class="language-bash">npx fauji --dir ./tests --pattern test.js --name math --watch</code></pre>
+          <ul>
+            <li><code>--dir</code> or <code>-d</code>: Test directory (default: current directory)</li>
+            <li><code>--pattern</code> or <code>-p</code>: Test file pattern (default: <code>test.js</code>)</li>
+            <li><code>--name</code> or <code>-n</code>: Filter test files by name</li>
+            <li><code>--watch</code> or <code>-w</code>: Watch mode (reruns tests on file changes)</li>
+          </ul>
+        </section>
+      </div>
+      <footer>
+        <p>Copyright <a target="_blank" href="https://opensly.in">Opensly</a> and <a target="_blank" href="https://github.com/opensly/fauji/graphs/contributors">fauji contributors</a>. All rights reserved.</p>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
+      </footer>
+      
+    </div>
   </div>
-  <footer>
-    <p>&copy; 2024 Fauji Testing Framework. All rights reserved.</p>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
-  </footer>
 </body>
 </html> 

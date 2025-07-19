@@ -27,7 +27,7 @@
   --bg-gradient-dark: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
   
   /* Border and shadow colors */
-  --border-color: #e2e8f0;
+  --border-color: #E2DACB;
   --border-light: #f1f5f9;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -147,8 +147,14 @@ header {
   background-color: var(--bg-base);
 }
 
+header .logo {
+  display: flex;
+  align-items: center;
+  height: 42px;
+}
+
 header .logo img {
-  width: 96px;  
+  height: 36px;
 }
 
 nav {
@@ -308,7 +314,6 @@ main {
 /* Sections */
 section {
   margin-bottom: var(--space-3xl);
-  text-align: center;
 }
 
 section h2 {
@@ -324,9 +329,6 @@ section p {
   font-size: 1.125rem;
   color: var(--text-secondary);
   margin: 0 0 var(--space-xl);
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
   line-height: 1.7;
 }
 
@@ -395,12 +397,12 @@ ul li::before {
 
 /* Footer */
 footer {
-  background: var(--bg-primary);
+  background-color: #141413;
   border-top: 1px solid var(--border-color);
   padding: var(--space-xl) 0;
   text-align: center;
   margin-top: var(--space-3xl);
-  color: var(--text-muted);
+  color: var(--text-light);
   font-size: 0.95rem;
 }
 
@@ -481,4 +483,47 @@ footer {
   .feature {
     padding: var(--space-md);
   }
+}
+
+.page-container {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  border-top: 1px solid var(--border-color);
+}
+
+.page-container aside {
+  width: 320px;
+  flex: 0 0 320px;
+  background-color: #E2DACB;
+  height: calc(100vh - 75px);
+  position: fixed;
+  top: 75px;
+  left: 0;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.page-container .side-nav {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-md);
+}
+
+.page-container .side-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.page-container .page-content {
+  flex: 1;
+  margin-left: 320px;
+  width: calc(100% - 320px);
+}
+
+.page-container .page-content-inner {
+  padding: var(--space-md);
+  max-width: 1200px;
+  margin: 0 auto;
 }
