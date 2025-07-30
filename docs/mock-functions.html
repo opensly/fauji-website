@@ -36,14 +36,9 @@
           <li><a href="/docs/async-testing.html">Async Testing</a></li>
           <li><a href="/docs/setup-teardown.html">Setup & Teardown</a></li>
           <li><a href="/docs/mock-functions.html" class="active">Mock Functions</a></li>
+          <li><a href="/docs/cli.html">CLI Reference</a></li>
         </ul>
-        <h6>Framework Guides</h6>
-        <ul>
-          <li><a href="/docs/angular.html">Angular</a></li>
-          <li><a href="/docs/react.html">React</a></li>
-          <li><a href="/docs/vue.html">Vue</a></li>
-          <li><a href="/docs/solid.html">Solid</a></li>
-        </ul>
+
       </nav>
     </aside>
     <div class="page-content">
@@ -51,45 +46,883 @@
         <h1>Mock Functions</h1>
         <section>
           <h2>Overview</h2>
-          <p>Fauji provides built-in utilities for spying, stubbing, and mocking functions and modules. These tools help you track calls, replace implementations, and isolate dependencies in your tests.</p>
-        </section>
-        <section>
-          <h2>Spies</h2>
-          <p>A <strong>spy</strong> wraps a function and tracks its calls and arguments.</p>
-          <pre><code class="language-js">const { spy } = require('fauji/matchers');
-  const fn = spy();
-  fn(1, 2);
-  expect(fn.callCount).toBe(1);
-  expect(fn.calls[0]).toEqual([1, 2]);
-  </code></pre>
-          <div class="note">Spies can be used to verify how many times a function was called and with what arguments.</div>
-        </section>
-        <section>
-          <h2>Stubs</h2>
-          <p>A <strong>stub</strong> replaces an object's method with a spy, optionally with a custom implementation.</p>
-          <pre><code class="language-js">const obj = { greet: (name) => 'Hello ' + name };
-  const { stub } = require('fauji/matchers');
-  stub(obj, 'greet', (name) => 'Hi ' + name);
-  expect(obj.greet('Sam')).toBe('Hi Sam');
-  </code></pre>
-          <div class="note">Stubs can be restored to the original method using the <code>restore</code> method on the returned spy.</div>
-        </section>
-        <section>
-          <h2>Mocks</h2>
-          <p>A <strong>mock</strong> replaces a module's exports with a mock implementation.</p>
-          <pre><code class="language-js">const { mock } = require('fauji/matchers');
-  const m = mock('./some-module', { foo: () => 42 });
-  // ... use mocked module ...
-  m.restore(); // Restore original
-  </code></pre>
-          <div class="note">Mocks are useful for isolating dependencies and controlling module behavior in tests.</div>
-        </section>
-        <section>
-          <h2>Tips</h2>
+          <p>Mock functions are essential for testing in isolation, controlling dependencies, and verifying how your code interacts with external systems. Fauji provides a comprehensive mocking system that includes spies, stubs, mocks, and module mocking capabilities.</p>
+          
+          <h3>Why Use Mock Functions?</h3>
           <ul>
-            <li>Use spies to verify function calls and arguments.</li>
-            <li>Use stubs to replace methods for specific test scenarios.</li>
-            <li>Use mocks to isolate modules and control their exports.</li>
+            <li><strong>Isolation</strong> - Test units in isolation from their dependencies</li>
+            <li><strong>Control</strong> - Control the behavior of external functions and modules</li>
+            <li><strong>Verification</strong> - Verify that functions are called with expected arguments</li>
+            <li><strong>Performance</strong> - Avoid expensive operations like network calls or database queries</li>
+            <li><strong>Reliability</strong> - Create predictable test environments</li>
+          </ul>
+
+          <h3>Mock Function Types</h3>
+          <ul>
+            <li><strong>Spies</strong> - Track function calls without changing behavior</li>
+            <li><strong>Stubs</strong> - Replace method implementations while tracking calls</li>
+            <li><strong>Mocks</strong> - Complete function replacements with configurable behavior</li>
+            <li><strong>Module Mocks</strong> - Replace entire modules or specific exports</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Creating Mock Functions</h2>
+
+          <h3><code>fn()</code> - Mock Functions</h3>
+          <p>Creates a new mock function that tracks calls and allows behavior configuration.</p>
+          <pre>
+            <code class="language-js">
+describe('Mock Functions', () => {
+  test('creates basic mock function', () => {
+    const mockFn = fn();
+    
+    // Call the mock function
+    mockFn('hello', 'world');
+    mockFn(42);
+    
+    // Verify calls
+    expect(mockFn).toHaveBeenCalledTimes(2);
+    expect(mockFn).toHaveBeenCalledWith('hello', 'world');
+    expect(mockFn).toHaveBeenLastCalledWith(42);
+  });
+
+  test('mock function with implementation', () => {
+    const mockFn = fn((x, y) => x + y);
+    
+    const result = mockFn(3, 4);
+    
+    expect(result).toBe(7);
+    expect(mockFn).toHaveBeenCalledWith(3, 4);
+  });
+
+  test('mock function with return value', () => {
+    const mockFn = fn().mockReturnValue('mocked result');
+    
+    const result = mockFn();
+    
+    expect(result).toBe('mocked result');
+    expect(mockFn).toHaveBeenCalled();
+  });
+});
+            </code>
+          </pre>
+
+          <h3><code>spy(originalFunction)</code> - Function Spies</h3>
+          <p>Creates a spy that wraps an existing function, allowing you to track calls while preserving original behavior.</p>
+          <pre>
+            <code class="language-js">
+describe('Spies', () => {
+  test('spy on existing function', () => {
+    const originalFunction = (a, b) => a * b;
+    const spiedFunction = spy(originalFunction);
+    
+    const result = spiedFunction(3, 4);
+    
+    expect(result).toBe(12); // Original behavior preserved
+    expect(spiedFunction).toHaveBeenCalledWith(3, 4);
+    expect(spiedFunction.callCount).toBe(1);
+  });
+
+  test('spy tracks multiple calls', () => {
+    const calculator = (operation, a, b) => {
+      switch(operation) {
+        case 'add': return a + b;
+        case 'multiply': return a * b;
+        default: return 0;
+      }
+    };
+    
+    const spiedCalculator = spy(calculator);
+    
+    spiedCalculator('add', 2, 3);
+    spiedCalculator('multiply', 4, 5);
+    
+    expect(spiedCalculator).toHaveBeenCalledTimes(2);
+    expect(spiedCalculator).toHaveBeenNthCalledWith(1, 'add', 2, 3);
+    expect(spiedCalculator).toHaveBeenNthCalledWith(2, 'multiply', 4, 5);
+  });
+});
+            </code>
+          </pre>
+
+          <h3><code>spyOn(object, methodName)</code> - Method Spies</h3>
+          <p>Creates a spy on an object's method, allowing you to track calls and optionally replace the implementation.</p>
+          <pre>
+            <code class="language-js">
+describe('Method Spies', () => {
+  test('spy on object method', () => {
+    const user = {
+      name: 'John',
+      greet: function(message) {
+        return `${message}, ${this.name}!`;
+      }
+    };
+    
+    const greetSpy = spyOn(user, 'greet');
+    
+    const result = user.greet('Hello');
+    
+    expect(result).toBe('Hello, John!');
+    expect(greetSpy).toHaveBeenCalledWith('Hello');
+  });
+
+  test('spy with custom implementation', () => {
+    const apiService = {
+      fetchData: () => 'real data'
+    };
+    
+    const fetchSpy = spyOn(apiService, 'fetchData')
+      .mockImplementation(() => 'mocked data');
+    
+    const result = apiService.fetchData();
+    
+    expect(result).toBe('mocked data');
+    expect(fetchSpy).toHaveBeenCalled();
+  });
+
+  test('restore original method', () => {
+    const mathUtils = {
+      multiply: (a, b) => a * b
+    };
+    
+    const multiplySpy = spyOn(mathUtils, 'multiply')
+      .mockReturnValue(999);
+    
+    expect(mathUtils.multiply(3, 4)).toBe(999);
+    
+    multiplySpy.restore();
+    
+    expect(mathUtils.multiply(3, 4)).toBe(12); // Original behavior restored
+  });
+});
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Mock Function Configuration</h2>
+
+          <h3>Return Values</h3>
+          <pre>
+            <code class="language-js">
+describe('Mock Return Values', () => {
+  test('mock return value', () => {
+    const mockFn = fn().mockReturnValue('static value');
+    
+    expect(mockFn()).toBe('static value');
+    expect(mockFn(1, 2, 3)).toBe('static value'); // Always returns same value
+  });
+
+  test('mock different return values', () => {
+    const mockFn = fn()
+      .mockReturnValueOnce('first call')
+      .mockReturnValueOnce('second call')
+      .mockReturnValue('default value');
+    
+    expect(mockFn()).toBe('first call');
+    expect(mockFn()).toBe('second call');
+    expect(mockFn()).toBe('default value');
+    expect(mockFn()).toBe('default value'); // Continues returning default
+  });
+
+  test('mock resolved promises', () => {
+    const mockAsyncFn = fn().mockResolvedValue('async result');
+    
+    return expect(mockAsyncFn()).resolves.toBe('async result');
+  });
+
+  test('mock rejected promises', () => {
+    const mockAsyncFn = fn().mockRejectedValue(new Error('Async error'));
+    
+    return expect(mockAsyncFn()).rejects.toThrow('Async error');
+  });
+});
+            </code>
+          </pre>
+
+          <h3>Custom Implementations</h3>
+          <pre>
+            <code class="language-js">
+describe('Mock Implementations', () => {
+  test('custom implementation', () => {
+    const mockFn = fn().mockImplementation((name) => `Hello, ${name}!`);
+    
+    expect(mockFn('Alice')).toBe('Hello, Alice!');
+    expect(mockFn('Bob')).toBe('Hello, Bob!');
+  });
+
+  test('implementation once', () => {
+    const mockFn = fn()
+      .mockImplementationOnce(() => 'first call')
+      .mockImplementationOnce(() => 'second call')
+      .mockImplementation(() => 'default implementation');
+    
+    expect(mockFn()).toBe('first call');
+    expect(mockFn()).toBe('second call');
+    expect(mockFn()).toBe('default implementation');
+  });
+
+  test('async implementation', () => {
+    const mockAsyncFn = fn().mockImplementation(async (delay) => {
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return `Waited ${delay}ms`;
+    });
+    
+    return expect(mockAsyncFn(100)).resolves.toBe('Waited 100ms');
+  });
+
+  test('throwing implementation', () => {
+    const mockFn = fn().mockImplementation(() => {
+      throw new Error('Mock error');
+    });
+    
+    expect(() => mockFn()).toThrow('Mock error');
+    expect(mockFn).toHaveBeenCalled();
+  });
+});
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Mock Function Matchers</h2>
+
+          <h3>Call Verification</h3>
+          <pre>
+            <code class="language-js">
+describe('Call Verification', () => {
+  test('verify function was called', () => {
+    const mockFn = fn();
+    
+    expect(mockFn).not.toHaveBeenCalled();
+    
+    mockFn();
+    
+    expect(mockFn).toHaveBeenCalled();
+  });
+
+  test('verify call count', () => {
+    const mockFn = fn();
+    
+    mockFn();
+    mockFn();
+    mockFn();
+    
+    expect(mockFn).toHaveBeenCalledTimes(3);
+  });
+
+  test('verify call arguments', () => {
+    const mockFn = fn();
+    
+    mockFn('hello', 'world', 42);
+    
+    expect(mockFn).toHaveBeenCalledWith('hello', 'world', 42);
+  });
+
+  test('verify specific call', () => {
+    const mockFn = fn();
+    
+    mockFn('first');
+    mockFn('second');
+    mockFn('third');
+    
+    expect(mockFn).toHaveBeenNthCalledWith(1, 'first');
+    expect(mockFn).toHaveBeenNthCalledWith(2, 'second');
+    expect(mockFn).toHaveBeenLastCalledWith('third');
+  });
+
+  test('verify exact arguments', () => {
+    const mockFn = fn();
+    
+    mockFn('hello', 'world');
+    
+    // Regular toHaveBeenCalledWith uses deep equality
+    expect(mockFn).toHaveBeenCalledWith('hello', 'world');
+    
+    // toHaveBeenCalledWithExactly uses strict equality
+    expect(mockFn).toHaveBeenCalledWithExactly('hello', 'world');
+  });
+});
+
+            </code>
+          </pre>
+
+          <h3>Return Value Verification</h3>
+          <pre>
+            <code class="language-js">
+describe('Return Value Verification', () => {
+  test('verify function returned', () => {
+    const mockFn = fn(() => 'result');
+    
+    mockFn();
+    
+    expect(mockFn).toHaveReturned();
+  });
+
+  test('verify return value', () => {
+    const mockFn = fn(() => 'specific result');
+    
+    mockFn();
+    
+    expect(mockFn).toHaveReturnedWith('specific result');
+  });
+
+  test('verify last return value', () => {
+    const mockFn = fn()
+      .mockReturnValueOnce('first')
+      .mockReturnValueOnce('second')
+      .mockReturnValue('last');
+    
+    mockFn();
+    mockFn();
+    mockFn();
+    
+    expect(mockFn).toHaveLastReturnedWith('last');
+  });
+
+  test('verify nth return value', () => {
+    const mockFn = fn()
+      .mockReturnValueOnce('first')
+      .mockReturnValueOnce('second')
+      .mockReturnValueOnce('third');
+    
+    mockFn();
+    mockFn();
+    mockFn();
+    
+    expect(mockFn).toHaveNthReturnedWith(1, 'first');
+    expect(mockFn).toHaveNthReturnedWith(2, 'second');
+    expect(mockFn).toHaveNthReturnedWith(3, 'third');
+  });
+});
+            </code>
+          </pre>
+
+          <h3>Error Verification</h3>
+          <pre>
+            <code class="language-js">
+describe('Error Verification', () => {
+  test('verify function threw', () => {
+    const mockFn = fn(() => {
+      throw new Error('Test error');
+    });
+    
+    expect(() => mockFn()).toThrow();
+    expect(mockFn).toHaveThrown();
+  });
+
+  test('verify specific error', () => {
+    const mockFn = fn(() => {
+      throw new TypeError('Invalid type');
+    });
+    
+    expect(() => mockFn()).toThrow();
+    expect(mockFn).toHaveThrownWith(TypeError);
+    expect(mockFn).toHaveThrownWith('Invalid type');
+    expect(mockFn).toHaveThrownWith(/Invalid/);
+  });
+});
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Module Mocking</h2>
+
+          <h3>Mocking External Modules</h3>
+          <pre>
+            <code class="language-js">
+describe('Module Mocking', () => {
+  test('mock entire module', () => {
+    // Mock the fs module
+    const mockFs = mock('fs', {
+      readFileSync: fn().mockReturnValue('mocked file content'),
+      writeFileSync: fn(),
+      existsSync: fn().mockReturnValue(true)
+    });
+    
+    const fs = require('fs');
+    
+    expect(fs.readFileSync('test.txt')).toBe('mocked file content');
+    expect(fs.existsSync('test.txt')).toBe(true);
+    
+    fs.writeFileSync('output.txt', 'data');
+    
+    expect(fs.writeFileSync).toHaveBeenCalledWith('output.txt', 'data');
+    
+    // Restore original module
+    mockFs.restore();
+  });
+
+  test('mock specific module functions', () => {
+    const mockHttp = mock('http', {
+      createServer: fn().mockReturnValue({
+        listen: fn(),
+        close: fn()
+      }),
+      get: fn().mockImplementation((url, callback) => {
+        callback({ statusCode: 200, data: 'mocked response' });
+      })
+    });
+    
+    const http = require('http');
+    const server = http.createServer();
+    
+    expect(http.createServer).toHaveBeenCalled();
+    
+    server.listen(3000);
+    expect(server.listen).toHaveBeenCalledWith(3000);
+    
+    mockHttp.restore();
+  });
+});
+            </code>
+          </pre>
+
+          <h3>Partial Module Mocking</h3>
+          <pre>
+            <code class="language-js">
+describe('Partial Module Mocking', () => {
+  test('mock only specific exports', () => {
+    // Get actual module first
+    const actualUtils = requireActual('./utils');
+    
+    // Mock specific functions while keeping others
+    const mockUtils = mock('./utils', {
+      ...actualUtils,
+      fetchData: fn().mockResolvedValue({ id: 1, name: 'Mocked User' }),
+      // Keep other functions from actual module
+    });
+    
+    const utils = require('./utils');
+    
+    // Mocked function
+    return expect(utils.fetchData()).resolves.toMatchObject({
+      id: 1,
+      name: 'Mocked User'
+    });
+    
+    // Other functions work normally
+    // expect(utils.formatDate(new Date())).toBe(actualUtils.formatDate(new Date()));
+  });
+});
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Real-World Testing Examples</h2>
+
+          <h3>API Client Testing</h3>
+          <pre>
+            <code class="language-js">
+describe('API Client', () => {
+  let apiClient;
+  let mockFetch;
+
+  beforeEach(() => {
+    mockFetch = fn();
+    global.fetch = mockFetch;
+    apiClient = new APIClient('https://api.example.com');
+  });
+
+  afterEach(() => {
+    resetAllMocks();
+  });
+
+  test('makes GET request with correct parameters', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ id: 1, name: 'John' })
+    });
+
+    const result = await apiClient.get('/users/1');
+
+    expect(mockFetch).toHaveBeenCalledWith('https://api.example.com/users/1', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    expect(result).toMatchObject({ id: 1, name: 'John' });
+  });
+
+  test('handles POST requests with data', async () => {
+    const userData = { name: 'Jane', email: 'jane@example.com' };
+    
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ id: 2, ...userData })
+    });
+
+    const result = await apiClient.post('/users', userData);
+
+    expect(mockFetch).toHaveBeenCalledWith('https://api.example.com/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    expect(result).toMatchObject({ id: 2, name: 'Jane' });
+  });
+
+  test('handles network errors', async () => {
+    mockFetch.mockRejectedValue(new Error('Network error'));
+
+    await expect(apiClient.get('/users')).rejects.toThrow('Network error');
+    expect(mockFetch).toHaveBeenCalled();
+  });
+});
+            </code>
+          </pre>
+
+          <h3>Event Handler Testing</h3>
+          <pre>
+            <code class="language-js">
+describe('Event Handler', () => {
+  test('calls event listeners in correct order', () => {
+    const eventEmitter = new EventEmitter();
+    const listener1 = fn();
+    const listener2 = fn();
+    const listener3 = fn();
+
+    eventEmitter.on('test', listener1);
+    eventEmitter.on('test', listener2);
+    eventEmitter.on('test', listener3);
+
+    eventEmitter.emit('test', 'data');
+
+    expect(listener1).toHaveBeenCalledWith('data');
+    expect(listener2).toHaveBeenCalledWith('data');
+    expect(listener3).toHaveBeenCalledWith('data');
+
+    // Verify call order
+    expect(listener1).toHaveBeenCalledBefore(listener2);
+    expect(listener2).toHaveBeenCalledBefore(listener3);
+  });
+
+  test('removes event listeners correctly', () => {
+    const eventEmitter = new EventEmitter();
+    const listener = fn();
+
+    eventEmitter.on('test', listener);
+    eventEmitter.emit('test');
+    
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    eventEmitter.off('test', listener);
+    eventEmitter.emit('test');
+    
+    expect(listener).toHaveBeenCalledTimes(1); // Not called again
+  });
+});
+            </code>
+          </pre>
+
+          <h3>Service Integration Testing</h3>
+          <pre>
+            <code class="language-js">
+describe('User Service', () => {
+  let userService;
+  let mockDatabase;
+  let mockEmailService;
+
+  beforeEach(() => {
+    mockDatabase = {
+      findById: fn(),
+      save: fn(),
+      delete: fn()
+    };
+    
+    mockEmailService = {
+      sendWelcomeEmail: fn(),
+      sendPasswordResetEmail: fn()
+    };
+
+    userService = new UserService(mockDatabase, mockEmailService);
+  });
+
+  test('creates user and sends welcome email', async () => {
+    const userData = { name: 'John', email: 'john@example.com' };
+    const savedUser = { id: 1, ...userData };
+
+    mockDatabase.save.mockResolvedValue(savedUser);
+    mockEmailService.sendWelcomeEmail.mockResolvedValue(true);
+
+    const result = await userService.createUser(userData);
+
+    expect(mockDatabase.save).toHaveBeenCalledWith(userData);
+    expect(mockEmailService.sendWelcomeEmail).toHaveBeenCalledWith(savedUser);
+    expect(result).toMatchObject(savedUser);
+  });
+
+  test('handles database errors gracefully', async () => {
+    const userData = { name: 'John', email: 'john@example.com' };
+    
+    mockDatabase.save.mockRejectedValue(new Error('Database error'));
+
+    await expect(userService.createUser(userData)).rejects.toThrow('Database error');
+    
+    expect(mockDatabase.save).toHaveBeenCalledWith(userData);
+    expect(mockEmailService.sendWelcomeEmail).not.toHaveBeenCalled();
+  });
+
+  test('retries failed email sending', async () => {
+    const userData = { name: 'John', email: 'john@example.com' };
+    const savedUser = { id: 1, ...userData };
+
+    mockDatabase.save.mockResolvedValue(savedUser);
+    mockEmailService.sendWelcomeEmail
+      .mockRejectedValueOnce(new Error('Email service down'))
+      .mockRejectedValueOnce(new Error('Email service down'))
+      .mockResolvedValue(true);
+
+    const result = await userService.createUser(userData);
+
+    expect(mockEmailService.sendWelcomeEmail).toHaveBeenCalledTimes(3);
+    expect(result).toMatchObject(savedUser);
+  });
+});
+
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Mock Management</h2>
+
+          <h3>Clearing and Resetting Mocks</h3>
+          <pre>
+            <code class="language-js">
+describe('Mock Management', () => {
+  test('clear mock calls', () => {
+    const mockFn = fn();
+    
+    mockFn('first call');
+    mockFn('second call');
+    
+    expect(mockFn).toHaveBeenCalledTimes(2);
+    
+    mockFn.mockClear();
+    
+    expect(mockFn).toHaveBeenCalledTimes(0);
+    expect(mockFn.calls).toHaveLength(0);
+  });
+
+  test('reset mock implementation', () => {
+    const mockFn = fn()
+      .mockReturnValue('mocked')
+      .mockImplementation(() => 'implemented');
+    
+    expect(mockFn()).toBe('implemented');
+    
+    mockFn.mockReset();
+    
+    expect(mockFn()).toBeUndefined(); // Back to default behavior
+    expect(mockFn).toHaveBeenCalledTimes(1); // Calls are cleared too
+  });
+
+  test('restore mock to original', () => {
+    const original = () => 'original';
+    const mockFn = fn(original).mockReturnValue('mocked');
+    
+    expect(mockFn()).toBe('mocked');
+    
+    mockFn.mockRestore();
+    
+    expect(mockFn()).toBe('original'); // Original behavior restored
+  });
+});
+            </code>
+          </pre>
+
+          <h3>Global Mock Management</h3>
+          <pre>
+            <code class="language-js">
+describe('Global Mock Management', () => {
+  afterEach(() => {
+    // Clear all mocks after each test
+    resetAllMocks();
+  });
+
+  test('reset all mocks globally', () => {
+    const mock1 = fn();
+    const mock2 = fn();
+    const mock3 = fn();
+
+    mock1('test');
+    mock2('test');
+    mock3('test');
+
+    expect(mock1).toHaveBeenCalled();
+    expect(mock2).toHaveBeenCalled();
+    expect(mock3).toHaveBeenCalled();
+
+    resetAllMocks();
+
+    expect(mock1).not.toHaveBeenCalled();
+    expect(mock2).not.toHaveBeenCalled();
+    expect(mock3).not.toHaveBeenCalled();
+  });
+});
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Advanced Mock Patterns</h2>
+
+          <h3>Conditional Mocking</h3>
+          <pre>
+            <code class="language-js">
+describe('Conditional Mocking', () => {
+  test('mock based on input', () => {
+    const mockApi = fn().mockImplementation((endpoint) => {
+      switch (endpoint) {
+        case '/users':
+          return Promise.resolve([{ id: 1, name: 'John' }]);
+        case '/posts':
+          return Promise.resolve([{ id: 1, title: 'Test Post' }]);
+        default:
+          return Promise.reject(new Error('Not found'));
+      }
+    });
+
+    return Promise.all([
+      expect(mockApi('/users')).resolves.toHaveLength(1),
+      expect(mockApi('/posts')).resolves.toMatchObject([{ title: 'Test Post' }]),
+      expect(mockApi('/invalid')).rejects.toThrow('Not found')
+    ]);
+  });
+
+  test('stateful mock', () => {
+    let callCount = 0;
+    const statefulMock = fn().mockImplementation(() => {
+      callCount++;
+      return `Call number ${callCount}`;
+    });
+
+    expect(statefulMock()).toBe('Call number 1');
+    expect(statefulMock()).toBe('Call number 2');
+    expect(statefulMock()).toBe('Call number 3');
+  });
+});
+            </code>
+          </pre>
+
+          <h3>Mock Chains and Fluent APIs</h3>
+          <pre>
+            <code class="language-js">
+describe('Mock Chains', () => {
+  test('mock fluent API', () => {
+    const mockBuilder = {
+      select: fn().mockReturnThis(),
+      where: fn().mockReturnThis(),
+      orderBy: fn().mockReturnThis(),
+      limit: fn().mockReturnThis(),
+      execute: fn().mockResolvedValue([{ id: 1, name: 'Result' }])
+    };
+
+    const queryBuilder = mockBuilder;
+
+    return queryBuilder
+      .select('name')
+      .where('active', true)
+      .orderBy('created_at')
+      .limit(10)
+      .execute()
+      .then(results => {
+        expect(mockBuilder.select).toHaveBeenCalledWith('name');
+        expect(mockBuilder.where).toHaveBeenCalledWith('active', true);
+        expect(mockBuilder.orderBy).toHaveBeenCalledWith('created_at');
+        expect(mockBuilder.limit).toHaveBeenCalledWith(10);
+        expect(mockBuilder.execute).toHaveBeenCalled();
+        expect(results).toHaveLength(1);
+      });
+  });
+});
+
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Best Practices</h2>
+
+          <h3>When to Use Each Mock Type</h3>
+          <ul>
+            <li><strong>Spies:</strong> When you want to track calls but keep original behavior</li>
+            <li><strong>Stubs:</strong> When you need to replace a method temporarily</li>
+            <li><strong>Mocks:</strong> When you need complete control over function behavior</li>
+            <li><strong>Module Mocks:</strong> When isolating external dependencies</li>
+          </ul>
+
+          <h3>Mock Function Guidelines</h3>
+          <pre>
+            <code class="language-js">
+describe('Mock Best Practices', () => {
+  // ✅ Good: Descriptive mock implementations
+  test('good mock implementation', () => {
+    const mockUserService = {
+      findById: fn().mockImplementation((id) => {
+        if (id === 1) return Promise.resolve({ id: 1, name: 'John' });
+        return Promise.reject(new Error('User not found'));
+      })
+    };
+    
+    // Clear expectation of what the mock does
+  });
+
+  // ❌ Bad: Unclear mock behavior
+  test('bad mock implementation', () => {
+    const mockUserService = {
+      findById: fn().mockReturnValue('anything')
+    };
+    
+    // Unclear what this represents
+  });
+
+  // ✅ Good: Clean up mocks
+  afterEach(() => {
+    resetAllMocks();
+  });
+
+  // ✅ Good: Verify interactions
+  test('verify important interactions', () => {
+    const mockLogger = fn();
+    
+    processData('test', mockLogger);
+    
+    expect(mockLogger).toHaveBeenCalledWith('Processing: test');
+  });
+});
+
+run();
+            </code>
+          </pre>
+
+          <h3>Common Pitfalls</h3>
+          <ul>
+            <li><strong>Over-mocking:</strong> Don't mock everything; test real integrations when possible</li>
+            <li><strong>Brittle tests:</strong> Avoid testing implementation details</li>
+            <li><strong>Forgetting cleanup:</strong> Always reset mocks between tests</li>
+            <li><strong>Complex mocks:</strong> Keep mock implementations simple and focused</li>
+            <li><strong>Not verifying calls:</strong> Always verify that mocks were called as expected</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Integration with Other Features</h2>
+          <p>Mock functions integrate seamlessly with other Fauji features:</p>
+          <ul>
+            <li><strong>Async Testing:</strong> Mock async functions and verify promise behavior</li>
+            <li><strong>Setup/Teardown:</strong> Initialize and clean up mocks in lifecycle hooks</li>
+            <li><strong>Custom Matchers:</strong> Create custom matchers for mock verification</li>
+            <li><strong>Error Testing:</strong> Mock functions that throw errors for error path testing</li>
+          </ul>
+
+          <p>For more testing patterns, see:</p>
+          <ul>
+            <li><a href="/docs/async-testing.html">Async Testing Guide</a> for async mock patterns</li>
+            <li><a href="/docs/setup-teardown.html">Setup & Teardown Guide</a> for mock lifecycle management</li>
           </ul>
         </section>
       </div>

@@ -36,14 +36,9 @@
           <li><a href="/docs/async-testing.html">Async Testing</a></li>
           <li><a href="/docs/setup-teardown.html">Setup & Teardown</a></li>
           <li><a href="/docs/mock-functions.html">Mock Functions</a></li>
+          <li><a href="/docs/cli.html">CLI Reference</a></li>
         </ul>
-        <h6>Framework Guides</h6>
-        <ul>
-          <li><a href="/docs/angular.html">Angular</a></li>
-          <li><a href="/docs/react.html">React</a></li>
-          <li><a href="/docs/vue.html">Vue</a></li>
-          <li><a href="/docs/solid.html">Solid</a></li>
-        </ul>
+
       </nav>
     </aside>
     <div class="page-content">
@@ -51,48 +46,354 @@
         <h1>Getting Started</h1>
         <section>
           <h2>Introduction</h2>
-          <p><strong>Fauji</strong> is a lightweight, zero-config testing framework for JavaScript and TypeScript. It provides Jest-like global APIs, powerful matchers, spies/stubs/mocks, and a simple CLI for running and watching tests. TypeScript users get full typings and autocompletion out of the box.</p>
+          <p><strong>Fauji</strong> is a lightweight testing framework for JavaScript applications. Designed 
+            with simplicity and developer experience in mind, Fauji provides a Jest-like API with powerful 
+            assertion capabilities, comprehensive mocking system, and built-in async testing support.</p>
         </section>
+
         <section>
           <h2>Installation</h2>
           <pre><code class="language-bash">npm install fauji --save-dev</code></pre>
-          <div class="note">No configuration required. Just write your tests and run them!</div>
         </section>
+
         <section>
-          <h2>First Test Example</h2>
-          <pre>
-            <code class="language-js">
-              describe('Math', () => {
-                beforeAll(() => { /* setup */ });
-                beforeEach(() => { /* per-test setup */ });
+          <h2>Configuration</h2>
+          <p>Fauji requires a simple configuration file fauji.config.json to define test discovery patterns 
+            and source directories. You must create a <code>fauji.config.json</code> file in your project root 
+            for Fauji to work.</p>
+          
+          <pre><code class="language-json">{
+  "sourceDirectory": "src",
+  "testMatch": [
+    "**/*.test.js",
+    "**/*.spec.js"
+  ]
+}</code></pre>
+          
+          <ul>
+            <li><strong><code>sourceDirectory</code></strong> - Directory containing your source code (default: current directory)</li>
+            <li><strong><code>testMatch</code></strong> - Array of glob patterns to match test files</li>
+          </ul>
+          
+          <h4>Allowed Test Patterns</h4>
+          <ul>
+            <li><code>**/*.test.js</code> - Files ending with .test.js</li>
+            <li><code>**/*.spec.js</code> - Files ending with .spec.js</li>
+            <li><code>**/*.test.ts</code> - Files ending with .test.ts</li>
+            <li><code>**/*.spec.ts</code> - Files ending with .spec.ts</li>
+          </ul>
+          
+          <p class="note">
+            <strong>⚠️ Important:</strong> Without this configuration file, 
+            <span class="inline-code">npx fauji</span> command will exit with an error: 
+            "fauji.config.json not found in the project root"
+          </p>
+          
+          <h3>Without Configuration</h3>
+          
+          <p>When you specify all necessary options via command line, the config file becomes optional:</p>
+          <pre><code class="language-bash"># These work without config file:
+npx fauji --dir ./tests --pattern "*.test.js"
+npx fauji --dir ./src --pattern "*.spec.js" --name "auth"
+npx fauji --dir ./components --pattern "*.test.js" --watch</code></pre>
+          
+          <h2>Flexible to support different project structures</h2>
+          <p>No matter what type of test file structure you follow, Fauji automatically discovers tests in 
+            your project based on the testMatch pattern mentioned in the config file.</p>
 
-                test('adds', () => {
-                  expect(1 + 1).toBe(2);
-                });
+          <h4>Co-located Tests</h4>
+          <pre><code class="language-text">src/
+├── components/
+│   ├── Button.js
+│   ├── Button.test.js
+│   ├── Modal.js
+│   └── Modal.test.js
+├── utils/
+│   ├── math.js
+│   ├── math.test.js
+│   ├── string.js
+│   └── string.test.js
+└── services/
+    ├── api.js
+    ├── api.test.js
+    ├── auth.js
+    └── auth.test.js</code></pre>
+          <p>If you follow the co-located test structure like above, you just need to specify the 
+            <code>sourceDirectory</code> in the config file as <code>src</code> and you are good to go.</p>
+          <pre><code class="language-json">{
+  "sourceDirectory": "./src",
+  "testMatch": ["**/*.test.js", "**/*.spec.js"]
+}</code></pre>
+          
+          <h4>Separate Test Directory</h4>
+          <pre><code class="language-text">src/
+├── components/
+│   ├── Button.js
+│   └── Modal.js
+├── utils/
+│   ├── math.js
+│   └── string.js
+└── services/
+    ├── api.js
+    └── auth.js
 
-                test('object equality', () => {
-                  expect({ a: 1, b: 2 }).toEqual({ a: 1, b: 2 });
-                });
+tests/
+├── components/
+│   ├── Button.test.js
+│   └── Modal.test.js
+├── utils/
+│   ├── math.test.js
+│   └── string.test.js
+└── services/
+    ├── api.test.js
+    └── auth.test.js</code></pre>
+          <p>If you prefer to keep your tests in a separate directory like above, you just need to specify the 
+            <code>testDirectory</code> in the config file as <code>tests</code> and you are good to go.</p>
+          <pre><code class="language-json">{
+  "sourceDirectory": "./tests",
+  "testMatch": ["**/*.test.js", "**/*.spec.js"]
+}</code></pre>
+          
+          <div class="note">
+            <strong>💡 Pro Tip:</strong> CLI options always take precedence over configuration file settings. This allows you to override defaults for specific use cases while maintaining a base configuration.
+          </div>
+        </section>
+        
+        <section>
+          <h2>Writing Your First Test</h2>
+          <p>Create a test file (e.g., <code>math.test.js</code>) and start writing tests using Fauji's intuitive API:</p>
+          
+          <pre><code class="language-js">
+describe('Math Operations', () => {
+  test('addition works correctly', () => {
+    expect(2 + 2).toBe(4);
+    expect(0.1 + 0.2).toBeCloseTo(0.3);
+  });
 
-                afterEach(() => { /* per-test teardown */ });
-                afterAll(() => { /* teardown */ });
-              });
+  test('handles edge cases', () => {
+    expect(Infinity + 1).toBe(Infinity);
+    expect(NaN + 1).toBeNaN();
+  });
+});
 
-              run(); // Call at the end of your test file
+// Calculator module test
+function add(a, b) {
+  return a + b;
+}
+
+function divide(a, b) {
+  if (b === 0) throw new Error('Division by zero');
+  return a / b;
+}
+
+describe('Calculator', () => {
+  test('addition', () => {
+    expect(add(5, 3)).toBe(8);
+    expect(add(-1, 1)).toBe(0);
+  });
+
+  test('division', () => {
+    expect(divide(10, 2)).toBe(5);
+    expect(() => divide(10, 0)).toThrow('Division by zero');
+  });
+});
             </code>
           </pre>
         </section>
+
+        <section>
+          <h2>Test Structure and Organization</h2>
+          <p>Fauji follows Jest's familiar test structure with <code>describe</code> blocks for grouping and <code>test</code> functions for individual test cases:</p>
+
+          <pre>
+            <code class="language-js">
+describe('User Authentication', () => {
+  // Setup that runs before all tests in this describe block
+  beforeAll(() => {
+    console.log('Setting up authentication tests');
+  });
+
+  // Setup that runs before each test
+  beforeEach(() => {
+    // Reset any state before each test
+  });
+
+  describe('Login functionality', () => {
+    test('successful login with valid credentials', () => {
+      const user = { username: 'john', password: 'secret123' };
+      const result = authenticate(user);
+      
+      expect(result).toMatchObject({
+        success: true,
+        user: { username: 'john' }
+      });
+    });
+
+    test('failed login with invalid credentials', () => {
+      const user = { username: 'john', password: 'wrong' };
+      const result = authenticate(user);
+      
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Invalid credentials');
+    });
+  });
+
+  describe('Token validation', () => {
+    test('validates JWT tokens correctly', () => {
+      const token = 'valid.jwt.token';
+      expect(validateToken(token)).toBeTruthy();
+    });
+
+    test('rejects invalid tokens', () => {
+      expect(validateToken('invalid-token')).toBeFalsy();
+      expect(validateToken(null)).toBeFalsy();
+      expect(validateToken('')).toBeFalsy();
+    });
+  });
+
+  // Cleanup after each test
+  afterEach(() => {
+    // Clean up any test data
+  });
+
+  // Cleanup after all tests in this describe block
+  afterAll(() => {
+    console.log('Authentication tests completed');
+  });
+});
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Essential Matchers Overview</h2>
+          <p>Fauji provides a comprehensive set of matchers for different testing scenarios:</p>
+
+          <pre>
+            <code class="language-js">
+describe('Essential Matchers Demo', () => {
+  test('equality matchers', () => {
+    // Strict equality (Object.is)
+    expect(42).toBe(42);
+    expect('hello').toBe('hello');
+    
+    // Deep equality for objects and arrays
+    expect({ a: 1, b: 2 }).toEqual({ a: 1, b: 2 });
+    expect([1, 2, 3]).toEqual([1, 2, 3]);
+  });
+
+  test('type checking matchers', () => {
+    expect([1, 2, 3]).toBeArray();
+    expect({ key: 'value' }).toBeObject();
+    expect('hello world').toBeString();
+    expect(42).toBeNumber();
+    expect(true).toBeBoolean();
+    expect(() => {}).toBeFunction();
+    expect(new Date()).toBeDate();
+    expect(/pattern/).toBeRegExp();
+  });
+
+  test('truthiness and nullish matchers', () => {
+    expect(true).toBeTruthy();
+    expect('non-empty').toBeTruthy();
+    expect(1).toBeTruthy();
+    
+    expect(false).toBeFalsy();
+    expect('').toBeFalsy();
+    expect(0).toBeFalsy();
+    
+    expect(null).toBeNull();
+    expect(undefined).toBeUndefined();
+    expect('defined').toBeDefined();
+  });
+
+  test('string and pattern matchers', () => {
+    expect('Hello World').toMatch('World');
+    expect('user@example.com').toMatch(/\w+@\w+\.\w+/);
+    expect('Hello World').toContain('Hello');
+  });
+
+  test('array and collection matchers', () => {
+    expect([1, 2, 3, 4]).toContain(3);
+    expect([1, 2, 3]).toHaveLength(3);
+    expect('hello').toHaveLength(5);
+    expect(new Set([1, 2, 3])).toHaveLength(3);
+  });
+
+  test('object property matchers', () => {
+    const user = { 
+      name: 'John', 
+      age: 30, 
+      address: { city: 'New York', zip: '10001' } 
+    };
+    
+    expect(user).toHaveProperty('name');
+    expect(user).toHaveProperty('name', 'John');
+    expect(user).toHaveProperty('address.city', 'New York');
+    expect(user).toMatchObject({ name: 'John', age: 30 });
+  });
+
+  test('numerical comparison matchers', () => {
+    expect(10).toBeGreaterThan(5);
+    expect(10).toBeGreaterThanOrEqual(10);
+    expect(5).toBeLessThan(10);
+    expect(5).toBeLessThanOrEqual(5);
+    expect(0.1 + 0.2).toBeCloseTo(0.3, 1);
+  });
+});
+            </code>
+          </pre>
+        </section>
+
         <section>
           <h2>Running Tests</h2>
-          <p>Use the CLI to run your tests:</p>
-          <pre><code class="language-bash">npx fauji --dir ./tests --pattern test.js --name math --watch</code></pre>
+          <p>Fauji provides a simple and powerful CLI for running your tests. Here are the essential commands to get you started:</p>
+          
+          <h3>Quick Start</h3>
+          <pre><code class="language-bash"># Run all tests in current directory
+npx fauji
+
+# Run tests in a specific directory
+npx fauji --dir ./tests
+
+# Run tests with a specific pattern
+npx fauji --pattern "*.test.js"</code></pre>
+
+          <h3>Essential Options</h3>
+          <pre><code class="language-bash"># Watch mode - automatically rerun tests when files change
+npx fauji --watch
+
+# Run only tests containing "auth" in the filename
+npx fauji --name "auth"
+
+# Combine options for targeted testing
+npx fauji --dir ./src --name "user" --watch</code></pre>
+
+          <h3>Common Use Cases</h3>
           <ul>
-            <li><code>--dir</code> or <code>-d</code>: Test directory (default: current directory)</li>
-            <li><code>--pattern</code> or <code>-p</code>: Test file pattern (default: <code>test.js</code>)</li>
-            <li><code>--name</code> or <code>-n</code>: Filter test files by name</li>
-            <li><code>--watch</code> or <code>-w</code>: Watch mode (reruns tests on file changes)</li>
+            <li><strong>Development:</strong> <code>npx fauji --watch</code> - Run tests continuously</li>
+            <li><strong>Specific Feature:</strong> <code>npx fauji --name "login"</code> - Test only login-related files</li>
+            <li><strong>Directory Testing:</strong> <code>npx fauji --dir ./src/components</code> - Test only components</li>
+            <li><strong>CI/CD:</strong> <code>npx fauji --parallel</code> - Run tests in parallel for faster execution</li>
+          </ul>
+
+          <div class="note">
+            <strong>💡 Pro Tip:</strong> Use <code>npx fauji --help</code> to see all available options, or check the <a href="/docs/cli.html">complete CLI reference</a> for advanced features like parallel execution, environment options, and performance optimization.
+          </div>
+        </section>
+
+        <section>
+          <h2>Next Steps</h2>
+          <p>Now that you have Fauji set up and understand the basics, explore these advanced features:</p>
+          
+          <ul>
+            <li><a href="/docs/using-matchers.html"><strong>Using Matchers</strong></a> - Comprehensive guide to all 40+ built-in matchers</li>
+            <li><a href="/docs/async-testing.html"><strong>Async Testing</strong></a> - Testing promises, async/await, and asynchronous operations</li>
+            <li><a href="/docs/setup-teardown.html"><strong>Setup & Teardown</strong></a> - Lifecycle hooks and test environment management</li>
+            <li><a href="/docs/mock-functions.html"><strong>Mock Functions</strong></a> - Spies, stubs, mocks, and module isolation</li>
           </ul>
         </section>
+
       </div>
       <footer>
         <p>Copyright <a target="_blank" href="https://opensly.in">Opensly</a> and <a target="_blank" href="https://github.com/opensly/fauji/graphs/contributors">fauji contributors</a>. All rights reserved.</p>

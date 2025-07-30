@@ -36,66 +36,810 @@
           <li><a href="/docs/async-testing.html">Async Testing</a></li>
           <li><a href="/docs/setup-teardown.html" class="active">Setup & Teardown</a></li>
           <li><a href="/docs/mock-functions.html">Mock Functions</a></li>
+          <li><a href="/docs/cli.html">CLI Reference</a></li>
         </ul>
-        <h6>Framework Guides</h6>
-        <ul>
-          <li><a href="/docs/angular.html">Angular</a></li>
-          <li><a href="/docs/react.html">React</a></li>
-          <li><a href="/docs/vue.html">Vue</a></li>
-          <li><a href="/docs/solid.html">Solid</a></li>
-        </ul>
+
       </nav>
     </aside>
     <div class="page-content">
       <div class="page-content-inner">
         <h1>Setup &amp; Teardown</h1>
         <section>
-          <h2>Test Hooks</h2>
-          <p>Fauji provides hooks to run setup and teardown logic before or after tests and suites. These are useful for initializing state, cleaning up resources, or resetting mocks.</p>
+          <h2>Overview</h2>
+          <p>Setup and teardown hooks are essential for managing test environment state, initializing 
+            resources, cleaning up after tests, and ensuring test isolation. Fauji provides comprehensive 
+            lifecycle hooks that work seamlessly with both synchronous and asynchronous operations.</p>
+          
+          <h3>Fauji's Setup and Teardown Features</h3>
+          <p>Fauji provides the same familiar lifecycle hooks you're used to from Jest, with full support for:</p>
           <ul>
-            <li><code>beforeAll(fn)</code>: Run once before all tests in a suite</li>
-            <li><code>afterAll(fn)</code>: Run once after all tests in a suite</li>
-            <li><code>beforeEach(fn)</code>: Run before each test in a suite</li>
-            <li><code>afterEach(fn)</code>: Run after each test in a suite</li>
+            <li><strong>Async Operations</strong> - All hooks support async/await for database setup, API calls, file operations</li>
+            <li><strong>Error Handling</strong> - Graceful handling of setup failures with proper cleanup</li>
+            <li><strong>Nested Scopes</strong> - Hooks work seamlessly with nested describe blocks</li>
+            <li><strong>Resource Cleanup</strong> - Automatic cleanup of mocks, timers, and other resources</li>
+            <li><strong>Integration</strong> - Works perfectly with Fauji's mocking system and fake timers</li>
           </ul>
         </section>
-        <section>
-          <h2>Example</h2>
-          <pre><code class="language-js">describe('Array', () => {
-    let arr;
 
-    beforeAll(() => {
-      // Runs once before all tests
-      arr = [];
-    });
+        <section>
+          <h2>Lifecycle Hooks</h2>
+          <p>Fauji provides four main lifecycle hooks that execute at different points in the test lifecycle:</p>
+
+          <h3><code>beforeAll(fn)</code></h3>
+          <p>Runs once before all tests in the current describe block. Perfect for expensive setup operations that can be shared across tests.</p>
+
+          <h3><code>afterAll(fn)</code></h3>
+          <p>Runs once after all tests in the current describe block have completed. Used for cleanup operations like closing connections or removing test data.</p>
+
+          <h3><code>beforeEach(fn)</code></h3>
+          <p>Runs before each individual test. Ensures every test starts with a fresh, predictable state.</p>
+
+          <h3><code>afterEach(fn)</code></h3>
+          <p>Runs after each individual test completes. Used for per-test cleanup and state reset.</p>
+        </section>
+
+        <section>
+          <h2>Basic Usage Patterns</h2>
+
+          <h3>Simple Setup and Teardown</h3>
+          <pre>
+            <code class="language-js">
+describe('Calculator', () => {
+  let calculator;
+
+  beforeAll(() => {
+    // One-time setup for the entire test suite
+    console.log('Starting Calculator tests');
+  });
+
+  beforeEach(() => {
+    // Fresh calculator instance for each test
+    calculator = new Calculator();
+  });
+
+  afterEach(() => {
+    // Clean up after each test
+    calculator.reset();
+    calculator = null;
+  });
+
+  afterAll(() => {
+    // One-time cleanup after all tests
+    console.log('Calculator tests completed');
+  });
+
+  test('length is 1 after push', () => {
+    expect(arr).toHaveLength(1);
+  });
+});
+  </code></pre>
+
+          <h3>Nested Describe Blocks</h3>
+          <pre>
+            <code class="language-js">
+describe('User Management', () => {
+  let userService;
+
+  beforeAll(() => {
+    // Setup for entire User Management suite
+    userService = new UserService();
+  });
+
+  afterAll(() => {
+    // Cleanup for entire User Management suite
+    userService.disconnect();
+  });
+
+  describe('User Creation', () => {
+    let testUser;
 
     beforeEach(() => {
-      // Runs before each test
-      arr.push(1);
+      // Setup specific to User Creation tests
+      testUser = {
+        name: 'Test User',
+        email: 'test@example.com'
+      };
     });
 
     afterEach(() => {
-      // Runs after each test
-      arr.pop();
+      // Cleanup specific to User Creation tests
+      if (testUser.id) {
+        userService.deleteUser(testUser.id);
+      }
     });
 
-    afterAll(() => {
-      // Runs once after all tests
-      arr = null;
+    test('creates user with valid data', () => {
+      const result = userService.createUser(testUser);
+      expect(result).toMatchObject({
+        id: expect.toBeString(),
+        name: 'Test User'
+      });
     });
 
-    test('length is 1 after push', () => {
-      expect(arr).toHaveLength(1);
+    test('validates required fields', () => {
+      expect(() => userService.createUser({})).toThrow('Name is required');
     });
   });
+
+  describe('User Validation', () => {
+    beforeEach(() => {
+      // Different setup for validation tests
+      userService.setValidationMode('strict');
+    });
+
+    afterEach(() => {
+      // Reset validation mode
+      userService.setValidationMode('normal');
+    });
+
+    test('enforces email format', () => {
+      expect(() => userService.createUser({
+        name: 'John',
+        email: 'invalid-email'
+      })).toThrow('Invalid email format');
+    });
+  });
+});
   </code></pre>
         </section>
+
         <section>
-          <h2>Tips</h2>
+          <h2>Async Setup and Teardown</h2>
+          <p>All lifecycle hooks support async operations with promises and async/await.</p>
+
+          <h3>Database Setup Example</h3>
+          <pre>
+            <code class="language-js">
+describe('Database Operations', () => {
+  let db;
+  let connection;
+
+  beforeAll(async () => {
+    // Connect to test database
+    connection = await createTestConnection();
+    db = connection.getDatabase('test_db');
+    
+    // Run migrations
+    await db.migrate();
+    console.log('Database setup completed');
+  });
+
+  beforeEach(async () => {
+    // Start a transaction for each test
+    await db.beginTransaction();
+    
+    // Seed with test data
+    await db.users.create({
+      name: 'Default User',
+      email: 'default@example.com'
+    });
+  });
+
+  afterEach(async () => {
+    // Rollback transaction to clean state
+    await db.rollback();
+  });
+
+  afterAll(async () => {
+    // Close database connection
+    await connection.close();
+    console.log('Database cleanup completed');
+  });
+
+  test('creates user successfully', async () => {
+    const user = await db.users.create({
+      name: 'John Doe',
+      email: 'john@example.com'
+    });
+
+    expect(user).toMatchObject({
+      id: expect.toBeString(),
+      name: 'John Doe'
+    });
+  });
+
+  test('finds users by email', async () => {
+    const user = await db.users.findByEmail('default@example.com');
+    expect(user).toMatchObject({ name: 'Default User' });
+  });
+});
+  </code></pre>
+
+          <h3>API Testing Setup</h3>
+          <pre>
+            <code class="language-js">
+describe('API Integration Tests', () => {
+  let server;
+  let apiClient;
+
+  beforeAll(async () => {
+    // Start test server
+    server = await startTestServer({
+      port: 3001,
+      environment: 'test'
+    });
+    
+    // Initialize API client
+    apiClient = new APIClient({
+      baseURL: 'http://localhost:3001',
+      timeout: 5000
+    });
+
+    // Wait for server to be ready
+    await waitForServer(server);
+  });
+
+  beforeEach(async () => {
+    // Reset database state
+    await server.resetDatabase();
+    
+    // Create test authentication token
+    const authResponse = await apiClient.post('/auth/test-token', {
+      userId: 'test-user-123'
+    });
+    
+    apiClient.setAuthToken(authResponse.data.token);
+  });
+
+  afterEach(async () => {
+    // Clear authentication
+    apiClient.clearAuthToken();
+    
+    // Clear any uploaded files
+    await server.clearTempFiles();
+  });
+
+  afterAll(async () => {
+    // Shutdown test server
+    await server.stop();
+  });
+
+  test('GET /users returns user list', async () => {
+    const response = await apiClient.get('/users');
+    
+    expect(response.status).toBe(200);
+    expect(response.data).toBeArray();
+  });
+
+  test('POST /users creates new user', async () => {
+    const userData = {
+      name: 'Jane Doe',
+      email: 'jane@example.com'
+    };
+
+    const response = await apiClient.post('/users', userData);
+    
+    expect(response.status).toBe(201);
+    expect(response.data).toMatchObject(userData);
+  });
+});
+  </code></pre>
+        </section>
+
+        <section>
+          <h2>File System and Resource Management</h2>
+
+          <h3>Temporary File Management</h3>
+          <pre>
+            <code class="language-js">
+describe('File Processing', () => {
+  let tempDir;
+  let testFiles;
+
+  beforeAll(async () => {
+    // Create temporary directory
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'fauji-test-'));
+  });
+
+  beforeEach(async () => {
+    // Create test files for each test
+    testFiles = {
+      input: path.join(tempDir, 'input.txt'),
+      output: path.join(tempDir, 'output.txt'),
+      config: path.join(tempDir, 'config.json')
+    };
+
+    await fs.writeFile(testFiles.input, 'test input data');
+    await fs.writeFile(testFiles.config, JSON.stringify({
+      format: 'text',
+      encoding: 'utf8'
+    }));
+  });
+
+  afterEach(async () => {
+    // Clean up test files
+    for (const filePath of Object.values(testFiles)) {
+      try {
+        await fs.unlink(filePath);
+      } catch (error) {
+        // File might not exist, ignore error
+      }
+    }
+  });
+
+  afterAll(async () => {
+    // Remove temporary directory
+    await fs.rmdir(tempDir, { recursive: true });
+  });
+
+  test('processes file correctly', async () => {
+    await processFile(testFiles.input, testFiles.output, testFiles.config);
+    
+    const result = await fs.readFile(testFiles.output, 'utf8');
+    expect(result).toContain('processed: test input data');
+  });
+
+  test('handles missing input file', async () => {
+    await fs.unlink(testFiles.input);
+    
+    await expect(
+      processFile(testFiles.input, testFiles.output, testFiles.config)
+    ).rejects.toThrow(/ENOENT/);
+  });
+});
+  </code></pre>
+
+          <h3>Mock and Timer Management</h3>
+          <pre>
+            <code class="language-js">
+describe('Time-dependent Operations', () => {
+  let originalFetch;
+  let mockFetch;
+
+  beforeAll(() => {
+    // Setup global mocks
+    originalFetch = global.fetch;
+    mockFetch = fn();
+    global.fetch = mockFetch;
+  });
+
+  beforeEach(() => {
+    // Reset mocks and enable fake timers
+    mockFetch.mockClear();
+    useFakeTimers();
+    
+    // Default mock implementation
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: 'test data' })
+    });
+  });
+
+  afterEach(() => {
+    // Restore real timers
+    useRealTimers();
+    
+    // Reset all mocks
+    resetAllMocks();
+  });
+
+  afterAll(() => {
+    // Restore original globals
+    global.fetch = originalFetch;
+  });
+
+  test('retries failed requests with backoff', async () => {
+    // Setup fetch to fail first two times
+    mockFetch
+      .mockRejectedValueOnce(new Error('Network error'))
+      .mockRejectedValueOnce(new Error('Network error'))
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      });
+
+    const resultPromise = retryFetch('/api/data', { 
+      maxRetries: 3,
+      baseDelay: 1000 
+    });
+
+    // Fast-forward through retry delays
+    advanceTimersByTime(1000); // First retry
+    advanceTimersByTime(2000); // Second retry (exponential backoff)
+
+    const result = await resultPromise;
+    
+    expect(result).toMatchObject({ success: true });
+    expect(mockFetch).toHaveBeenCalledTimes(3);
+  });
+
+  test('caches responses with TTL', async () => {
+    const cache = new ResponseCache({ ttl: 5000 });
+    
+    // First call should hit the network
+    await cache.get('/api/user/1');
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    
+    // Second call should use cache
+    await cache.get('/api/user/1');
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    
+    // Advance past TTL
+    advanceTimersByTime(6000);
+    
+    // Third call should hit network again
+    await cache.get('/api/user/1');
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+  });
+});
+  </code></pre>
+        </section>
+
+        <section>
+          <h2>Error Handling in Hooks</h2>
+          <p>Proper error handling in setup and teardown hooks is crucial for maintaining test reliability.</p>
+
+          <h3>Graceful Error Handling</h3>
+          <pre>
+            <code class="language-js">
+describe('Robust Test Setup', () => {
+  let server;
+  let database;
+
+  beforeAll(async () => {
+    try {
+      // Start database first
+      database = await startTestDatabase();
+      
+      // Then start server
+      server = await startTestServer({
+        database: database.connectionString
+      });
+    } catch (error) {
+      // Cleanup partial setup on error
+      if (database) {
+        await database.stop().catch(() => {});
+      }
+      throw error;
+    }
+  });
+
+  beforeEach(async () => {
+    // Verify services are still running
+    if (!database.isConnected()) {
+      throw new Error('Database connection lost');
+    }
+    
+    if (!server.isRunning()) {
+      throw new Error('Server is not running');
+    }
+    
+    // Reset to clean state
+    await database.reset();
+  });
+
+  afterEach(async () => {
+    // Always attempt cleanup, even if test failed
+    try {
+      await database.clearTestData();
+    } catch (error) {
+      console.warn('Failed to clear test data:', error.message);
+    }
+  });
+
+  afterAll(async () => {
+    // Cleanup in reverse order with error handling
+    const cleanupErrors = [];
+    
+    if (server) {
+      try {
+        await server.stop();
+      } catch (error) {
+        cleanupErrors.push(`Server cleanup failed: ${error.message}`);
+      }
+    }
+    
+    if (database) {
+      try {
+        await database.stop();
+      } catch (error) {
+        cleanupErrors.push(`Database cleanup failed: ${error.message}`);
+      }
+    }
+    
+    if (cleanupErrors.length > 0) {
+      console.warn('Cleanup warnings:', cleanupErrors.join('; '));
+    }
+  });
+
+  test('handles normal operations', async () => {
+    const response = await makeAPICall('/health');
+    expect(response.status).toBe('healthy');
+  });
+});
+  </code></pre>
+
+          <h3>Timeout and Retry Logic</h3>
+          <pre>
+            <code class="language-js">
+describe('Network-dependent Tests', () => {
+  beforeAll(async () => {
+    // Wait for external service with timeout
+    await waitForService('https://api.external-service.com/health', {
+      timeout: 30000,
+      retryInterval: 1000
+    });
+  });
+
+  beforeEach(async () => {
+    // Retry flaky setup operations
+    await retryOperation(async () => {
+      await resetExternalState();
+    }, {
+      maxAttempts: 3,
+      delay: 1000
+    });
+  });
+
+  test('integrates with external service', async () => {
+    const result = await callExternalAPI();
+    expect(result).toMatchObject({ success: true });
+  });
+});
+
+// Helper function for retrying operations
+async function retryOperation(operation, options = {}) {
+  const { maxAttempts = 3, delay = 1000 } = options;
+  
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (attempt === maxAttempts) {
+        throw error;
+      }
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+}
+  </code></pre>
+        </section>
+
+        <section>
+          <h2>Advanced Patterns</h2>
+
+          <h3>Shared Test Context</h3>
+          <pre>
+            <code class="language-js">
+describe('E-commerce Integration', () => {
+  const testContext = {
+    users: {},
+    products: {},
+    orders: {}
+  };
+
+  beforeAll(async () => {
+    // Create shared test data
+    testContext.users.customer = await createTestUser({
+      type: 'customer',
+      email: 'customer@test.com'
+    });
+    
+    testContext.users.admin = await createTestUser({
+      type: 'admin',
+      email: 'admin@test.com'
+    });
+    
+    testContext.products.laptop = await createTestProduct({
+      name: 'Test Laptop',
+      price: 999.99,
+      stock: 10
+    });
+  });
+
+  describe('Order Management', () => {
+    beforeEach(() => {
+      // Reset order context for each test
+      testContext.orders = {};
+    });
+
+    test('customer can place order', async () => {
+      const order = await placeOrder({
+        userId: testContext.users.customer.id,
+        items: [{ 
+          productId: testContext.products.laptop.id, 
+          quantity: 1 
+        }]
+      });
+
+      testContext.orders.customerOrder = order;
+      
+      expect(order).toMatchObject({
+        status: 'pending',
+        total: 999.99
+      });
+    });
+
+    test('admin can view all orders', async () => {
+      // Use order from previous test context
+      const orders = await getOrders({
+        userId: testContext.users.admin.id
+      });
+      
+      expect(orders).toBeArray();
+      expect(orders.length).toBeGreaterThan(0);
+    });
+  });
+
+  afterAll(async () => {
+    // Cleanup shared resources
+    await Promise.all([
+      deleteTestUser(testContext.users.customer.id),
+      deleteTestUser(testContext.users.admin.id),
+      deleteTestProduct(testContext.products.laptop.id)
+    ]);
+  });
+});
+  </code></pre>
+
+          <h3>Conditional Setup Based on Environment</h3>
+          <pre>
+            <code class="language-js">
+describe('Environment-specific Tests', () => {
+  beforeAll(async () => {
+    if (process.env.NODE_ENV === 'ci') {
+      // CI-specific setup
+      await setupCIEnvironment();
+    } else {
+      // Local development setup
+      await setupLocalEnvironment();
+    }
+  });
+
+  beforeEach(async () => {
+    // Skip slow setup in CI
+    if (process.env.CI !== 'true') {
+      await seedLargeDataset();
+    }
+  });
+
+  test.skipIf(process.env.CI === 'true')('performance test with large dataset', async () => {
+    const startTime = Date.now();
+    await processLargeDataset();
+    const duration = Date.now() - startTime;
+    
+    expect(duration).toBeLessThan(5000);
+  });
+
+  test('basic functionality works everywhere', async () => {
+    const result = await basicOperation();
+    expect(result).toBeTruthy();
+  });
+});
+  </code></pre>
+        </section>
+
+        <section>
+          <h2>Best Practices</h2>
+
+          <h3>Hook Execution Order</h3>
+          <div class="note">
+            <strong>Execution Order:</strong> Hooks execute in a predictable order:
+            <ol>
+              <li><code>beforeAll</code> (outermost to innermost)</li>
+              <li><code>beforeEach</code> (outermost to innermost)</li>
+              <li>Test execution</li>
+              <li><code>afterEach</code> (innermost to outermost)</li>
+              <li><code>afterAll</code> (innermost to outermost)</li>
+            </ol>
+          </div>
+
+          <h3>Do's and Don'ts</h3>
+          <pre>
+            <code class="language-js">
+// ✅ Good: Clean state for each test
+beforeEach(() => {
+  userService.reset();
+  mockDatabase.clear();
+});
+
+// ❌ Bad: Tests depend on execution order
+let userId;
+test('creates user', () => {
+  userId = userService.create({ name: 'John' });
+});
+test('finds user', () => {
+  const user = userService.find(userId); // Depends on previous test
+});
+
+// ✅ Good: Independent tests
+describe('User Service', () => {
+  let testUserId;
+  
+  beforeEach(() => {
+    testUserId = userService.create({ name: 'John' });
+  });
+  
+  test('finds user by id', () => {
+    const user = userService.find(testUserId);
+    expect(user.name).toBe('John');
+  });
+});
+
+// ✅ Good: Async hook handling
+beforeAll(async () => {
+  await connectToDatabase();
+});
+
+// ❌ Bad: Forgetting to await
+beforeAll(() => {
+  connectToDatabase(); // Returns promise but not awaited
+});
+
+// ✅ Good: Error handling in cleanup
+afterAll(async () => {
+  try {
+    await server.stop();
+  } catch (error) {
+    console.warn('Server cleanup failed:', error);
+  }
+});
+            </code>
+          </pre>
+
+          <h3>Performance Considerations</h3>
           <ul>
-            <li>Hooks are scoped to the current <code>describe</code> block.</li>
-            <li>You can nest <code>describe</code> blocks for more granular setup/teardown.</li>
-            <li>Use hooks to reset state, mock timers, or clean up resources.</li>
+            <li><strong>Use beforeAll for expensive operations:</strong> Database connections, server startup</li>
+            <li><strong>Use beforeEach for state reset:</strong> Clearing data, resetting mocks</li>
+            <li><strong>Minimize I/O in beforeEach:</strong> Prefer memory operations over disk/network</li>
+            <li><strong>Parallel-safe setup:</strong> Ensure hooks work correctly when tests run in parallel</li>
+            <li><strong>Timeout management:</strong> Set appropriate timeouts for long-running setup operations</li>
+          </ul>
+
+          <h3>Testing Hook Failures</h3>
+          <pre>
+            <code class="language-js">
+describe('Hook Error Handling', () => {
+  test('handles beforeAll failure gracefully', async () => {
+    let setupFailed = false;
+    
+    try {
+      await setupThatMightFail();
+    } catch (error) {
+      setupFailed = true;
+      console.warn('Setup failed, using fallback:', error.message);
+      await setupFallback();
+    }
+    
+    if (setupFailed) {
+      // Adjust test expectations for fallback scenario
+      expect(getServiceStatus()).toBe('fallback');
+    } else {
+      expect(getServiceStatus()).toBe('ready');
+    }
+  });
+});
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Integration with Other Features</h2>
+          <p>Setup and teardown hooks work seamlessly with other Fauji features:</p>
+          
+          <ul>
+            <li><strong>Async Testing:</strong> All hooks support async/await and promises</li>
+            <li><strong>Mock Functions:</strong> Setup and reset mocks in hooks</li>
+            <li><strong>Fake Timers:</strong> Enable/disable timer mocking in hooks</li>
+            <li><strong>Custom Matchers:</strong> Initialize custom matcher state in hooks</li>
+          </ul>
+
+          <p>For more advanced testing patterns, see:</p>
+          <ul>
+            <li><a href="/docs/mock-functions.html">Mock Functions Guide</a> for comprehensive mocking patterns</li>
+            <li><a href="/docs/async-testing.html">Async Testing Guide</a> for async setup and teardown examples</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Common Pitfalls</h2>
+          <ul>
+            <li><strong>Forgetting cleanup:</strong> Always pair setup with corresponding teardown</li>
+            <li><strong>Order dependencies:</strong> Tests should be independent and not rely on execution order</li>
+            <li><strong>Async without await:</strong> Always await async operations in hooks</li>
+            <li><strong>Shared mutable state:</strong> Avoid sharing mutable objects between tests</li>
+            <li><strong>Ignored errors:</strong> Handle errors in cleanup operations gracefully</li>
+            <li><strong>Heavy beforeEach:</strong> Avoid expensive operations that run before every test</li>
           </ul>
         </section>
       </div>

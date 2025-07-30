@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fauji CLI Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+  <header>
+    <nav aria-label="Sidebar navigation">
+      <div class="logo">
+        <img src="../assets/fauji.svg" alt="fauji">
+      </div>
+      <menu>
+        <li>
+          <a href="/docs/getting-started.html">Docs</a>
+        </li>
+        <li>
+          <a href="https://github.com/opensly/fauji" target="_blank">GitHub</a>
+        </li>
+      </menu>
+    </nav>
+  </header>
+
+  <div class="page-container">
+    <aside>
+      <nav class="side-nav" aria-label="Sidebar navigation">
+        <ul>
+          <li><a href="/docs/getting-started.html">Getting Started</a></li>
+          <li><a href="/docs/using-matchers.html">Using Matchers</a></li>
+          <li><a href="/docs/async-testing.html">Async Testing</a></li>
+          <li><a href="/docs/setup-teardown.html">Setup & Teardown</a></li>
+          <li><a href="/docs/mock-functions.html">Mock Functions</a></li>
+          <li><a href="/docs/cli.html" class="active">CLI Reference</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <div class="page-content">
+      <div class="page-content-inner">
+        <h1>Fauji CLI Reference</h1>
+        <p>The Fauji command-line interface provides powerful options for running tests with flexibility and performance optimization.</p>
+
+        <section>
+          <h2>Basic Usage</h2>
+          <pre><code class="language-bash">npx fauji [options]</code></pre>
+          
+          <h3>Quick Examples</h3>
+          <pre><code class="language-bash"># Run all tests in current directory
+npx fauji
+
+# Run tests in specific directory
+npx fauji --dir ./tests
+
+# Run tests matching a pattern
+npx fauji --pattern "*.test.js"
+
+# Run tests with specific name
+npx fauji --name "auth"
+
+# Watch mode for continuous testing
+npx fauji --watch
+
+# Combine multiple options
+npx fauji --dir ./src --pattern "*.spec.js" --name "user" --watch</code></pre>
+        </section>
+
+        <section>
+          <h2>Command Line Options</h2>
+          
+          <h3>Basic Options</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Short</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--dir</code></td>
+                <td><code>-d</code></td>
+                <td>Directory to run tests in</td>
+                <td>Current directory</td>
+              </tr>
+              <tr>
+                <td><code>--pattern</code></td>
+                <td><code>-p</code></td>
+                <td>Pattern to match test files</td>
+                <td><code>test.js</code></td>
+              </tr>
+              <tr>
+                <td><code>--name</code></td>
+                <td><code>-n</code></td>
+                <td>Filter test files by name substring</td>
+                <td>None</td>
+              </tr>
+              <tr>
+                <td><code>--watch</code></td>
+                <td><code>-w</code></td>
+                <td>Watch files for changes</td>
+                <td>false</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Advanced Options</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--coverage</code></td>
+                <td>Collect code coverage</td>
+                <td>false</td>
+              </tr>
+              <tr>
+                <td><code>--parallel &lt;num&gt;</code></td>
+                <td>Run test files in parallel</td>
+                <td>Number of CPUs</td>
+              </tr>
+              <tr>
+                <td><code>--env &lt;env&gt;</code></td>
+                <td>Test environment (node|jsdom)</td>
+                <td>node</td>
+              </tr>
+              <tr>
+                <td><code>--config &lt;file&gt;</code></td>
+                <td>Path to config file</td>
+                <td>fauji.config.json</td>
+              </tr>
+              <tr>
+                <td><code>--optimization-strategy &lt;strategy&gt;</code></td>
+                <td>Strategy for large files (auto|memory|timeout)</td>
+                <td>auto</td>
+              </tr>
+              <tr>
+                <td><code>--max-file-size &lt;bytes&gt;</code></td>
+                <td>File size threshold for optimizations</td>
+                <td>50KB</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Utility Options</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Short</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>--help</code></td>
+                <td><code>-h</code></td>
+                <td>Show help information</td>
+              </tr>
+              <tr>
+                <td><code>--version</code></td>
+                <td><code>-v</code></td>
+                <td>Show version information</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>Configuration File</h2>
+          <p>Fauji uses a configuration file to define test patterns and source directories. Create a <code>fauji.config.json</code> file in your project root:</p>
+          
+          <pre><code class="language-json">{
+  "sourceDirectory": "./src",
+  "testMatch": [
+    "**/*.test.js",
+    "**/*.spec.js"
+  ]
+}</code></pre>
+
+          <h3>Configuration Options</h3>
+          <ul>
+            <li><strong><code>sourceDirectory</code></strong> - Directory containing your source code (default: current directory)</li>
+            <li><strong><code>testMatch</code></strong> - Array of glob patterns to match test files</li>
+          </ul>
+
+          <h3>Allowed Test Patterns</h3>
+          <ul>
+            <li><code>**/*.test.js</code> - Files ending with .test.js</li>
+            <li><code>**/*.spec.js</code> - Files ending with .spec.js</li>
+          </ul>
+
+          <div class="note">
+            <strong>Note:</strong> CLI options take precedence over configuration file settings.
+          </div>
+        </section>
+
+        <section>
+          <h2>Environment Options</h2>
+          
+          <h3>Node Environment (Default)</h3>
+          <pre><code class="language-bash">npx fauji --env node</code></pre>
+          <p>Runs tests in Node.js environment. Suitable for testing utilities, services, and backend code.</p>
+
+          <h3>JSDOM Environment</h3>
+          <pre><code class="language-bash">npx fauji --env jsdom</code></pre>
+          <p>Runs tests with JSDOM for DOM testing. Automatically sets up browser-like environment with <code>document</code>, <code>window</code>, and other DOM APIs.</p>
+
+          <h3>Example: DOM Testing</h3>
+          <pre><code class="language-js">// dom.test.js
+describe('DOM Testing', () => {
+  test('creates and manipulates DOM elements', () => {
+    const div = document.createElement('div');
+    div.textContent = 'Hello World';
+    document.body.appendChild(div);
+    
+    expect(document.body.contains(div)).toBe(true);
+    expect(div.textContent).toBe('Hello World');
+  });
+});</code></pre>
+          <pre><code class="language-bash">npx fauji --env jsdom dom.test.js</code></pre>
+        </section>
+
+        <section>
+          <h2>Performance Optimization</h2>
+          
+          <h3>Parallel Execution</h3>
+          <pre><code class="language-bash"># Use all available CPU cores
+npx fauji --parallel
+
+# Use specific number of workers
+npx fauji --parallel 4</code></pre>
+          <p>Run test files in parallel for faster execution. Defaults to the number of available CPU cores.</p>
+
+          <h3>Large File Optimization</h3>
+          <p>Fauji automatically detects and optimizes large test files for better performance:</p>
+          
+          <pre><code class="language-bash"># Auto-detect optimization strategy (default)
+npx fauji --optimization-strategy auto
+
+# Force memory optimization
+npx fauji --optimization-strategy memory
+
+# Force timeout optimization
+npx fauji --optimization-strategy timeout</code></pre>
+
+          <h3>File Size Thresholds</h3>
+          <pre><code class="language-bash"># Set custom file size threshold (in bytes)
+npx fauji --max-file-size 100000
+
+# Set threshold in KB
+npx fauji --max-file-size 100KB</code></pre>
+          
+          <ul>
+            <li><strong>Default threshold:</strong> 50KB</li>
+            <li><strong>Large file:</strong> > 50KB (enhanced memory management)</li>
+            <li><strong>Huge file:</strong> > 200KB (extended timeouts)</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Watch Mode</h2>
+          <p>Watch mode continuously monitors your test files and source code for changes, automatically re-running tests when files are modified.</p>
+          
+          <pre><code class="language-bash"># Basic watch mode
+npx fauji --watch
+
+# Watch with specific directory and pattern
+npx fauji --dir ./src --pattern "*.test.js" --watch
+
+# Watch with name filter
+npx fauji --name "auth" --watch</code></pre>
+
+          <h3>Watch Mode Features</h3>
+          <ul>
+            <li><strong>File Monitoring:</strong> Watches test files and source files for changes</li>
+            <li><strong>Smart Re-runs:</strong> Only re-runs affected tests when possible</li>
+            <li><strong>Continuous Feedback:</strong> Provides real-time test results</li>
+            <li><strong>Performance:</strong> Optimized for fast re-execution</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Test Filtering</h2>
+          
+          <h3>By Directory</h3>
+          <pre><code class="language-bash"># Run tests in specific directory
+npx fauji --dir ./tests
+
+# Run tests in nested directory
+npx fauji --dir ./src/components</code></pre>
+
+          <h3>By Pattern</h3>
+          <pre><code class="language-bash"># Run all test files
+npx fauji --pattern "*.test.js"
+
+# Run spec files only
+npx fauji --pattern "*.spec.js"
+
+# Run specific test pattern
+npx fauji --pattern "user*.test.js"</code></pre>
+
+          <h3>By Name</h3>
+          <pre><code class="language-bash"># Run tests containing "auth" in filename
+npx fauji --name "auth"
+
+# Run tests containing "user" in filename
+npx fauji --name "user"
+
+# Case-insensitive matching
+npx fauji --name "API"</code></pre>
+        </section>
+
+        <section>
+          <h2>Advanced Usage Examples</h2>
+          
+          <h3>Complex Project Setup</h3>
+          <pre><code class="language-bash"># Run tests for specific module with DOM environment
+npx fauji --dir ./src/components --pattern "*.test.js" --env jsdom --parallel 4
+
+# Watch mode with optimization for large files
+npx fauji --dir ./src --pattern "*.spec.js" --watch --optimization-strategy memory
+
+# Run tests with custom file size threshold
+npx fauji --max-file-size 100KB --parallel 2
+
+# Filter and run specific test suites
+npx fauji --name "integration" --env node --parallel</code></pre>
+
+          <h3>CI/CD Integration</h3>
+          <pre><code class="language-bash"># CI-friendly output with parallel execution
+npx fauji --parallel 4 --env node
+
+# Coverage collection in CI
+npx fauji --coverage --parallel 2
+
+# Specific test suite for deployment
+npx fauji --name "smoke" --env jsdom</code></pre>
+
+          <h3>Development Workflow</h3>
+          <pre><code class="language-bash"># Quick test run during development
+npx fauji --name "current-feature"
+
+# Watch mode for TDD workflow
+npx fauji --watch --pattern "*.test.js"
+
+# DOM testing during component development
+npx fauji --env jsdom --watch --name "component"</code></pre>
+        </section>
+
+        <section>
+          <h2>Exit Codes</h2>
+          <p>Fauji uses standard exit codes to indicate test results:</p>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Meaning</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>0</code></td>
+                <td>Success</td>
+                <td>All tests passed</td>
+              </tr>
+              <tr>
+                <td><code>1</code></td>
+                <td>Failure</td>
+                <td>One or more tests failed</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Example: CI Integration</h3>
+          <pre><code class="language-bash">#!/bin/bash
+# Run tests and capture exit code
+npx fauji --parallel 4
+TEST_EXIT_CODE=$?
+
+# Check if tests passed
+if [ $TEST_EXIT_CODE -eq 0 ]; then
+  echo "✅ All tests passed"
+  exit 0
+else
+  echo "❌ Some tests failed"
+  exit 1
+fi</code></pre>
+        </section>
+
+        <section>
+          <h2>Troubleshooting</h2>
+          
+          <h3>Common Issues</h3>
+          
+          <h4>Configuration File Not Found</h4>
+          <pre><code class="language-bash">Error: fauji.config.json not found in the project root</code></pre>
+          <p><strong>Solution:</strong> Create a <code>fauji.config.json</code> file in your project root with required configuration.</p>
+
+          <h4>No Test Files Found</h4>
+          <pre><code class="language-bash">❌ No test files found in directory: ./tests</code></pre>
+          <p><strong>Solution:</strong> Ensure your test files match the patterns in your configuration or use <code>--pattern</code> to specify custom patterns.</p>
+
+          <h4>Large File Timeout</h4>
+          <pre><code class="language-bash">⏰ Large file execution timeout after 30s</code></pre>
+          <p><strong>Solution:</strong> Use <code>--optimization-strategy memory</code> or split large test files into smaller ones.</p>
+
+          <h3>Performance Tips</h3>
+          <ul>
+            <li>Use <code>--parallel</code> for faster execution on multi-core systems</li>
+            <li>Split large test files to avoid optimization overhead</li>
+            <li>Use <code>--name</code> to run only relevant tests during development</li>
+            <li>Use <code>--watch</code> for faster feedback during development</li>
+          </ul>
+        </section>
+      </div>
+      <footer>
+        <p>Copyright <a target="_blank" href="https://opensly.in">Opensly</a> and <a target="_blank" href="https://github.com/opensly/fauji/graphs/contributors">fauji contributors</a>. All rights reserved.</p>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
+      </footer>
+    </div>
+  </div>
+</body>
+</html> 

@@ -36,81 +36,741 @@
           <li><a href="/docs/async-testing.html" class="active">Async Testing</a></li>
           <li><a href="/docs/setup-teardown.html">Setup & Teardown</a></li>
           <li><a href="/docs/mock-functions.html">Mock Functions</a></li>
+          <li><a href="/docs/cli.html">CLI Reference</a></li>
         </ul>
-        <h6>Framework Guides</h6>
-        <ul>
-          <li><a href="/docs/angular.html">Angular</a></li>
-          <li><a href="/docs/react.html">React</a></li>
-          <li><a href="/docs/vue.html">Vue</a></li>
-          <li><a href="/docs/solid.html">Solid</a></li>
-        </ul>
+
       </nav>
     </aside>
     <div class="page-content">
       <div class="page-content-inner">
         <h1>Async Testing</h1>
         <section>
-          <h2>Testing Promises and Async Code</h2>
-          <p>Fauji supports async tests and matchers for promises. You can use <code>async</code>/<code>await</code> or return a promise from your test function.</p>
-          <pre>
-            <code class="language-js">
-              test('resolves to 5', async () => {
-                await expect(Promise.resolve(5)).resolves.toBe(5);
-            });
-
-            test('rejects with error', async () => {
-              await expect(Promise.reject(new Error('fail'))).rejects.toThrow('fail');
-            });
-            </code>
-          </pre>
-        </section>
-        <section>
-          <h2>Async Matchers</h2>
+          <h2>Overview</h2>
+          <p>Fauji provides comprehensive support for testing asynchronous code including promises, async/await patterns, callbacks, timers, and complex async workflows. Whether you're testing API calls, database operations, or time-dependent functionality, Fauji has the tools you need.</p>
+          
+          <h3>Key Async Testing Features</h3>
           <ul>
-            <li><code>resolves</code>: Asserts a promise resolves to a value</li>
-            <li><code>rejects</code>: Asserts a promise rejects with a value/error</li>
-            <li><code>toResolve</code>: Asserts a promise resolves (no value check)</li>
-            <li><code>toReject</code>: Asserts a promise rejects (no value check)</li>
+            <li><strong>Promise Testing</strong> - Direct promise resolution and rejection testing</li>
+            <li><strong>Async/Await Support</strong> - Native support for async test functions</li>
+            <li><strong>Async Matchers</strong> - Specialized matchers for promise-based assertions</li>
+            <li><strong>Fake Timers</strong> - Control time-dependent code execution</li>
+            <li><strong>Error Handling</strong> - Comprehensive async error testing</li>
+            <li><strong>Timeout Control</strong> - Prevent hanging tests with timeouts</li>
           </ul>
+        </section>
+
+        <section>
+          <h2>Basic Async Test Patterns</h2>
+
+          <h3>Async/Await Pattern (Recommended)</h3>
           <pre>
             <code class="language-js">
-              // resolves
-              await expect(Promise.resolve(42)).resolves.toBe(42);
+describe('Async/Await Testing', () => {
+  test('fetches user data successfully', async () => {
+    const userData = await fetchUser(123);
+    
+    expect(userData).toMatchObject({
+      id: 123,
+      name: expect.toBeString(),
+      email: expect.toBeValidEmail()
+    });
+  });
 
-              // rejects
-              await expect(Promise.reject('fail')).rejects.toBe('fail');
+  test('handles API errors gracefully', async () => {
+    // Test that the function throws when user doesn't exist
+    await expect(fetchUser(999)).rejects.toThrow('User not found');
+  });
 
-              // toResolve
-              await expect(Promise.resolve()).toResolve();
+  test('processes multiple concurrent requests', async () => {
+    const promises = [
+      fetchUser(1),
+      fetchUser(2),
+      fetchUser(3)
+    ];
+    
+    const users = await Promise.all(promises);
+    expect(users).toHaveLength(3);
+    expect(users.every(user => user.id)).toBeTruthy();
+  });
+});
+            </code>
+          </pre>
 
-              // toReject
-              await expect(Promise.reject()).toReject();
+          <h3>Promise Return Pattern</h3>
+          <pre>
+            <code class="language-js">
+describe('Promise Return Testing', () => {
+  test('processes data correctly', () => {
+    return processData({ input: 'test' }).then(result => {
+      expect(result.processed).toBe(true);
+      expect(result.data).toContain('test');
+    });
+  });
+
+  test('handles processing errors', () => {
+    return processData(null).catch(error => {
+      expect(error.message).toMatch(/invalid input/i);
+    });
+  });
+});
             </code>
           </pre>
         </section>
+
         <section>
-          <h2>Async Test Functions</h2>
-          <p>You can use <code>async</code> functions or return a promise in your tests:</p>
+          <h2>Promise Resolution Testing</h2>
+
+          <h3><code>toResolve(expected?)</code></h3>
+          <p>Tests that a promise resolves successfully, optionally with a specific value.</p>
           <pre>
             <code class="language-js">
-              test('async/await example', async () => {
-                const data = await fetchData();
-                expect(data).toBeDefined();
-              });
+describe('Promise Resolution', () => {
+  test('promise resolves without checking value', async () => {
+    await expect(Promise.resolve('any value')).toResolve();
+    await expect(Promise.resolve(null)).toResolve();
+    await expect(Promise.resolve(undefined)).toResolve();
+  });
 
-              test('promise example', () => {
-                return somePromise().then(result => {
-                  expect(result).toBe(true);
-                });
-              });
+  test('promise resolves with specific value', async () => {
+    await expect(Promise.resolve(42)).toResolve(42);
+    await expect(Promise.resolve('hello')).toResolve('hello');
+    await expect(Promise.resolve({ id: 1 })).toResolve({ id: 1 });
+  });
+
+  test('complex async operations', async () => {
+    const asyncOperation = async () => {
+      await delay(100);
+      return { success: true, data: 'processed' };
+    };
+
+    await expect(asyncOperation()).toResolve({
+      success: true,
+      data: 'processed'
+    });
+  });
+});
+            </code>
+          </pre>
+
+          <h3><code>resolves</code> Matcher Chain</h3>
+          <p>Use with any matcher to test resolved values.</p>
+          <pre>
+            <code class="language-js">
+describe('Resolves Matcher Chain', () => {
+  test('chain with various matchers', async () => {
+    await expect(Promise.resolve(42)).resolves.toBe(42);
+    await expect(Promise.resolve('hello')).resolves.toMatch(/hell/);
+    await expect(Promise.resolve([1, 2, 3])).resolves.toHaveLength(3);
+    await expect(Promise.resolve([1, 2, 3])).resolves.toContain(2);
+  });
+
+  test('complex object resolution', async () => {
+    const apiResponse = Promise.resolve({
+      user: { id: 1, name: 'John' },
+      meta: { total: 100 }
+    });
+
+    await expect(apiResponse).resolves.toMatchObject({
+      user: { name: 'John' }
+    });
+    await expect(apiResponse).resolves.toHaveProperty('meta.total', 100);
+  });
+
+  test('type checking resolved values', async () => {
+    await expect(Promise.resolve([])).resolves.toBeArray();
+    await expect(Promise.resolve({})).resolves.toBeObject();
+    await expect(Promise.resolve('test')).resolves.toBeString();
+    await expect(Promise.resolve(42)).resolves.toBeNumber();
+  });
+});
             </code>
           </pre>
         </section>
+
         <section>
-          <h2>Tips</h2>
+          <h2>Promise Rejection Testing</h2>
+
+          <h3><code>toReject(expected?)</code></h3>
+          <p>Tests that a promise rejects, optionally with a specific error.</p>
+          <pre>
+            <code class="language-js">
+describe('Promise Rejection', () => {
+  test('promise rejects without checking error', async () => {
+    await expect(Promise.reject(new Error('any error'))).toReject();
+    await expect(Promise.reject('string error')).toReject();
+    await expect(Promise.reject(null)).toReject();
+  });
+
+  test('promise rejects with specific error', async () => {
+    await expect(
+      Promise.reject(new Error('Database connection failed'))
+    ).toReject('Database connection failed');
+
+    await expect(
+      Promise.reject(new TypeError('Invalid argument'))
+    ).toReject(TypeError);
+  });
+
+  test('async function error handling', async () => {
+    const failingFunction = async () => {
+      throw new Error('Operation failed');
+    };
+
+    await expect(failingFunction()).toReject('Operation failed');
+  });
+});
+            </code>
+          </pre>
+
+          <h3><code>rejects</code> Matcher Chain</h3>
+          <p>Use with error matchers to test rejection reasons.</p>
+          <pre>
+            <code class="language-js">
+describe('Rejects Matcher Chain', () => {
+  test('error message testing', async () => {
+    const error = new Error('Network timeout');
+    await expect(Promise.reject(error)).rejects.toThrow('Network timeout');
+    await expect(Promise.reject(error)).rejects.toThrow(/timeout/);
+  });
+
+  test('error type testing', async () => {
+    await expect(
+      Promise.reject(new TypeError('Invalid type'))
+    ).rejects.toThrow(TypeError);
+
+    await expect(
+      Promise.reject(new ReferenceError('Undefined variable'))
+    ).rejects.toThrow(ReferenceError);
+  });
+
+  test('custom error objects', async () => {
+    const customError = {
+      code: 'AUTH_FAILED',
+      message: 'Invalid credentials',
+      statusCode: 401
+    };
+
+    await expect(Promise.reject(customError)).rejects.toMatchObject({
+      code: 'AUTH_FAILED',
+      statusCode: 401
+    });
+  });
+});
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Real-World Async Testing Examples</h2>
+
+          <h3>API Testing</h3>
+          <pre>
+            <code class="language-js">
+describe('API Client', () => {
+  test('GET request returns user data', async () => {
+    const response = await apiClient.get('/users/1');
+    
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: 1,
+        name: expect.toBeString(),
+        email: expect.toBeValidEmail()
+      }
+    });
+  });
+
+  test('POST request creates new user', async () => {
+    const newUser = { name: 'John', email: 'john@example.com' };
+    const response = await apiClient.post('/users', newUser);
+
+    expect(response.status).toBe(201);
+    expect(response.data).toMatchObject({
+      id: expect.toBeNumber(),
+      ...newUser
+    });
+  });
+
+  test('handles network errors', async () => {
+    // Mock network failure
+    mockFetch.mockRejectedValue(new Error('Network Error'));
+
+    await expect(apiClient.get('/users/1')).rejects.toThrow('Network Error');
+  });
+
+  test('handles rate limiting', async () => {
+    const rateLimitError = new Error('Rate limit exceeded');
+    rateLimitError.status = 429;
+
+    mockFetch.mockRejectedValue(rateLimitError);
+
+    await expect(apiClient.get('/data')).rejects.toMatchObject({
+      status: 429
+    });
+  });
+});
+            </code>
+          </pre>
+
+          <h3>Database Operations</h3>
+          <pre>
+            <code class="language-js">
+describe('Database Operations', () => {
+  test('creates user record', async () => {
+    const userData = { name: 'John', email: 'john@example.com' };
+    const user = await db.users.create(userData);
+
+    expect(user).toMatchObject({
+      id: expect.toBeString(),
+      name: 'John',
+      email: 'john@example.com',
+      createdAt: expect.toBeDate()
+    });
+  });
+
+  test('finds user by email', async () => {
+    await db.users.create({ name: 'John', email: 'john@example.com' });
+    
+    const user = await db.users.findByEmail('john@example.com');
+    expect(user).toMatchObject({ name: 'John' });
+  });
+
+  test('handles duplicate email error', async () => {
+    await db.users.create({ name: 'John', email: 'john@example.com' });
+
+    await expect(
+      db.users.create({ name: 'Jane', email: 'john@example.com' })
+    ).rejects.toThrow(/duplicate.*email/i);
+  });
+
+  test('transaction rollback on error', async () => {
+    await expect(async () => {
+      await db.transaction(async (tx) => {
+        await tx.users.create({ name: 'John' });
+        throw new Error('Simulated error');
+      });
+    }).rejects.toThrow('Simulated error');
+
+    // Verify no user was created
+    const users = await db.users.findAll();
+    expect(users).toHaveLength(0);
+  });
+});
+            </code>
+          </pre>
+
+          <h3>File System Operations</h3>
+          <pre>
+            <code class="language-js">
+describe('File Operations', () => {
+  test('reads file content', async () => {
+    const content = await fs.readFile('test-file.txt', 'utf8');
+    
+    expect(content).toBeString();
+    expect(content).toMatch(/test content/);
+  });
+
+  test('writes file successfully', async () => {
+    const testContent = 'Hello, World!';
+    
+    await expect(
+      fs.writeFile('output.txt', testContent)
+    ).toResolve();
+
+    const writtenContent = await fs.readFile('output.txt', 'utf8');
+    expect(writtenContent).toBe(testContent);
+  });
+
+  test('handles file not found error', async () => {
+    await expect(
+      fs.readFile('non-existent-file.txt')
+    ).rejects.toThrow(/ENOENT/);
+  });
+});
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Testing Time-Dependent Code</h2>
+          <p>Fauji includes fake timers powered by @sinonjs/fake-timers for testing time-dependent functionality.</p>
+
+          <h3>Basic Timer Control</h3>
+          <pre>
+            <code class="language-js">
+describe('Timer Testing', () => {
+  beforeEach(() => {
+    // Enable fake timers
+    useFakeTimers();
+  });
+
+  afterEach(() => {
+    // Restore real timers
+    useRealTimers();
+  });
+
+  test('delays execution with setTimeout', async () => {
+    let executed = false;
+    
+    setTimeout(() => {
+      executed = true;
+    }, 1000);
+
+    expect(executed).toBe(false);
+    
+    // Advance time by 1000ms
+    advanceTimersByTime(1000);
+    
+    expect(executed).toBe(true);
+  });
+
+  test('intervals execute repeatedly', () => {
+    let count = 0;
+    
+    const intervalId = setInterval(() => {
+      count++;
+    }, 100);
+
+    // Advance by 350ms (should execute 3 times)
+    advanceTimersByTime(350);
+    expect(count).toBe(3);
+
+    clearInterval(intervalId);
+  });
+
+  test('promise with timeout', async () => {
+    const delayedPromise = new Promise(resolve => {
+      setTimeout(() => resolve('completed'), 500);
+    });
+
+    // Start the promise
+    const resultPromise = delayedPromise;
+    
+    // Advance time to complete the timeout
+    advanceTimersByTime(500);
+    
+    await expect(resultPromise).resolves.toBe('completed');
+  });
+});
+            </code>
+          </pre>
+
+          <h3>Advanced Timer Scenarios</h3>
+          <pre>
+            <code class="language-js">
+describe('Advanced Timer Testing', () => {
+  beforeEach(() => {
+    useFakeTimers();
+  });
+
+  afterEach(() => {
+    useRealTimers();
+  });
+
+  test('debounce function', () => {
+    let callCount = 0;
+    const debouncedFn = debounce(() => callCount++, 250);
+
+    // Call function multiple times rapidly
+    debouncedFn();
+    debouncedFn();
+    debouncedFn();
+
+    expect(callCount).toBe(0); // Not called yet
+
+    // Advance time by less than debounce delay
+    advanceTimersByTime(200);
+    expect(callCount).toBe(0); // Still not called
+
+    // Advance past debounce delay
+    advanceTimersByTime(100);
+    expect(callCount).toBe(1); // Called once
+  });
+
+  test('throttle function', () => {
+    let callCount = 0;
+    const throttledFn = throttle(() => callCount++, 100);
+
+    throttledFn(); // Should execute immediately
+    expect(callCount).toBe(1);
+
+    throttledFn(); // Should be throttled
+    throttledFn(); // Should be throttled
+    expect(callCount).toBe(1);
+
+    advanceTimersByTime(100);
+    throttledFn(); // Should execute after throttle period
+    expect(callCount).toBe(2);
+  });
+
+  test('retry with exponential backoff', async () => {
+    let attempts = 0;
+    const failingFunction = async () => {
+      attempts++;
+      if (attempts < 3) {
+        throw new Error('Network error');
+      }
+      return 'success';
+    };
+
+    const retryPromise = retryWithBackoff(failingFunction, {
+      maxAttempts: 3,
+      baseDelay: 100
+    });
+
+    // Advance through retry attempts
+    advanceTimersByTime(100); // First retry
+    advanceTimersByTime(200); // Second retry (exponential backoff)
+    
+    await expect(retryPromise).resolves.toBe('success');
+    expect(attempts).toBe(3);
+  });
+});
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Error Handling Patterns</h2>
+
+          <h3>Testing Error Boundaries</h3>
+          <pre>
+            <code class="language-js">
+describe('Error Handling', () => {
+  test('catches and handles async errors', async () => {
+    const errorHandler = fn();
+    
+    const riskyOperation = async () => {
+      try {
+        await Promise.reject(new Error('Something went wrong'));
+      } catch (error) {
+        errorHandler(error);
+        return { error: error.message };
+      }
+    };
+
+    const result = await riskyOperation();
+    
+    expect(errorHandler).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'Something went wrong' })
+    );
+    expect(result).toMatchObject({
+      error: 'Something went wrong'
+    });
+  });
+
+  test('timeout handling', async () => {
+    const slowOperation = () => new Promise(resolve => {
+      setTimeout(() => resolve('completed'), 5000);
+    });
+
+    const timeoutPromise = Promise.race([
+      slowOperation(),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 1000)
+      )
+    ]);
+
+    useFakeTimers();
+    
+    // Advance to trigger timeout
+    advanceTimersByTime(1000);
+    
+    await expect(timeoutPromise).rejects.toThrow('Timeout');
+    
+    useRealTimers();
+  });
+});
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Testing Parallel Operations</h2>
+          <pre>
+            <code class="language-js">
+describe('Parallel Operations', () => {
+  test('Promise.all success', async () => {
+    const operations = [
+      fetchUser(1),
+      fetchUser(2),
+      fetchUser(3)
+    ];
+
+    const results = await Promise.all(operations);
+    
+    expect(results).toHaveLength(3);
+    expect(results[0]).toMatchObject({ id: 1 });
+    expect(results[1]).toMatchObject({ id: 2 });
+    expect(results[2]).toMatchObject({ id: 3 });
+  });
+
+  test('Promise.all failure', async () => {
+    const operations = [
+      Promise.resolve('success1'),
+      Promise.reject(new Error('failure')),
+      Promise.resolve('success2')
+    ];
+
+    await expect(Promise.all(operations)).rejects.toThrow('failure');
+  });
+
+  test('Promise.allSettled results', async () => {
+    const operations = [
+      Promise.resolve('success'),
+      Promise.reject(new Error('failure')),
+      Promise.resolve('another success')
+    ];
+
+    const results = await Promise.allSettled(operations);
+    
+    expect(results).toHaveLength(3);
+    expect(results[0]).toMatchObject({ 
+      status: 'fulfilled', 
+      value: 'success' 
+    });
+    expect(results[1]).toMatchObject({ 
+      status: 'rejected',
+      reason: expect.objectContaining({ message: 'failure' })
+    });
+    expect(results[2]).toMatchObject({ 
+      status: 'fulfilled', 
+      value: 'another success' 
+    });
+  });
+
+  test('concurrent with limit', async () => {
+    const tasks = Array.from({ length: 10 }, (_, i) => 
+      () => Promise.resolve(`result-${i}`)
+    );
+
+    const results = await runConcurrent(tasks, { concurrency: 3 });
+    
+    expect(results).toHaveLength(10);
+    expect(results).toContain('result-0');
+    expect(results).toContain('result-9');
+  });
+});
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Best Practices</h2>
+          
+          <h3>Always Handle Promises</h3>
+          <div class="note">
+            <strong>Critical:</strong> Always <code>await</code> promises or <code>return</code> them from test functions. Unhandled promises can cause flaky tests.
+          </div>
+          <pre>
+            <code class="language-js">
+// ❌ Wrong - Promise not awaited
+test('bad async test', () => {
+  expect(asyncFunction()).resolves.toBe('value'); // Missing await!
+});
+
+// ✅ Correct - Promise properly awaited
+test('good async test', async () => {
+  await expect(asyncFunction()).resolves.toBe('value');
+});
+
+// ✅ Also correct - Promise returned
+test('good promise test', () => {
+  return expect(asyncFunction()).resolves.toBe('value');
+});
+            </code>
+          </pre>
+
+          <h3>Use Specific Async Matchers</h3>
+          <pre>
+            <code class="language-js">
+// ❌ Less clear
+test('promise resolves', async () => {
+  const result = await somePromise();
+  expect(result).toBe('expected');
+});
+
+// ✅ More expressive
+test('promise resolves', async () => {
+  await expect(somePromise()).resolves.toBe('expected');
+});
+            </code>
+          </pre>
+
+          <h3>Test Both Success and Failure Cases</h3>
+          <pre>
+            <code class="language-js">
+describe('API Client', () => {
+  test('successful request', async () => {
+    await expect(api.getUser(1)).resolves.toMatchObject({
+      id: 1,
+      name: expect.toBeString()
+    });
+  });
+
+  test('handles 404 error', async () => {
+    await expect(api.getUser(999)).rejects.toThrow('User not found');
+  });
+
+  test('handles network error', async () => {
+    mockFetch.mockRejectedValue(new Error('Network error'));
+    await expect(api.getUser(1)).rejects.toThrow('Network error');
+  });
+});
+            </code>
+          </pre>
+
+          <h3>Control Time in Tests</h3>
+          <pre>
+            <code class="language-js">
+// ❌ Real timers make tests slow and flaky
+test('waits for real time', async () => {
+  setTimeout(() => {
+    // This test will actually wait 1 second
+  }, 1000);
+  await new Promise(resolve => setTimeout(resolve, 1000));
+});
+
+// ✅ Fake timers are fast and reliable
+test('controls time', () => {
+  useFakeTimers();
+  let executed = false;
+  
+  setTimeout(() => { executed = true; }, 1000);
+  advanceTimersByTime(1000);
+  
+  expect(executed).toBe(true);
+  useRealTimers();
+});
+            </code>
+          </pre>
+        </section>
+
+        <section>
+          <h2>Common Pitfalls</h2>
           <ul>
-            <li>Always <code>await</code> or <code>return</code> the promise in your test to ensure Fauji waits for completion.</li>
-            <li>Use <code>resolves</code> and <code>rejects</code> for expressive async assertions.</li>
+            <li><strong>Forgetting to await:</strong> Always await async operations in tests</li>
+            <li><strong>Floating promises:</strong> Unhandled promises can cause race conditions</li>
+            <li><strong>Real timers in tests:</strong> Use fake timers for time-dependent code</li>
+            <li><strong>Not testing error cases:</strong> Always test both success and failure scenarios</li>
+            <li><strong>Overly complex async logic:</strong> Break down complex async flows into smaller, testable units</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Integration with Other Features</h2>
+          <p>Async testing works seamlessly with other Fauji features:</p>
+          <ul>
+            <li><strong>Mock Functions:</strong> Mock async functions and verify their calls</li>
+            <li><strong>Setup/Teardown:</strong> Use async setup and teardown functions</li>
+            <li><strong>Custom Matchers:</strong> Create async custom matchers</li>
+            <li><strong>Error Matchers:</strong> Combine async testing with error assertions</li>
+          </ul>
+          
+          <p>For more information, see:</p>
+          <ul>
+            <li><a href="/docs/mock-functions.html">Mock Functions Guide</a> for async mocking patterns</li>
+            <li><a href="/docs/setup-teardown.html">Setup & Teardown Guide</a> for async lifecycle hooks</li>
           </ul>
         </section>
       </div>

@@ -82,15 +82,8 @@ body {
 }
 
 /* Set shorter line heights on headings and interactive elements */
-h1, h2, h3, h4,
 button, input, label {
   line-height: 1.1;
-}
-
-/* Balance text wrapping on headings */
-h1, h2,
-h3, h4 {
-  text-wrap: balance;
 }
 
 /* A elements that don't have a class get default styles */
@@ -136,6 +129,47 @@ body {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* typography */
+h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-md);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: 32px;
+  line-height: 2.5rem;
+  margin-top: 0;
+  margin-bottom: var(--space-xl);
+  text-wrap: balance;
+}
+
+h2 {
+  font-size: 28px;
+  line-height: 2.25rem;
+}
+
+h3 {
+  font-size: 24px;
+  line-height: 2rem;
+}
+
+h4 {
+  font-size: 21px;
+  line-height: 1.75rem;
+}
+
+h5 {
+  font-size: 18px;
+  line-height: 1.5rem;
+}
+
+h6 {
+  font-size: 16px;
+  line-height: 1.25rem;
 }
 
 /* Header Styles */
@@ -313,23 +347,27 @@ main {
 
 /* Sections */
 section {
-  margin-bottom: var(--space-3xl);
-}
-
-section h2 {
-  font-size: 2.25rem;
-  font-weight: 700;
-  margin: 0 0 var(--space-md);
-  color: var(--text-primary);
-  letter-spacing: -0.025em;
-  line-height: 1.2;
+  margin-bottom: var(--space-xl);
 }
 
 section p {
-  font-size: 1.125rem;
+  font-size: 1rem;
   color: var(--text-secondary);
-  margin: 0 0 var(--space-xl);
+  margin: 0 0 var(--space-md);
   line-height: 1.7;
+}
+
+section pre {
+  margin: 0 0 var(--space-md);
+  padding: 0;
+}
+
+section pre code {
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  font-weight: 400;
+  color: var(--text-primary);
+  font-family: var(--font-family-mono);
 }
 
 /* Links */
@@ -373,16 +411,16 @@ a:hover {
 ul {
   display: inline-block;
   text-align: left;
-  margin: var(--space-lg) auto 0;
-  font-size: 1.125rem;
+  margin: 0 auto var(--space-md);
   list-style: none;
   padding: 0;
 }
 
 ul li {
+  position: relative;
+  font-size: 1rem;
   margin-bottom: var(--space-sm);
   padding-left: var(--space-lg);
-  position: relative;
   color: var(--text-secondary);
 }
 
@@ -536,6 +574,15 @@ footer {
 
 .page-container .page-content-inner {
   padding: var(--space-md);
-  max-width: 1200px;
+  max-width: 960px;
   margin: 0 auto;
+}
+
+.inline-code {
+  background-color: #fff;
+  padding: 0 8px;
+  border-radius: 4px;
+  font-family: var(--font-family-mono);
+  font-size: 14px;
+  color: #333333;
 }
