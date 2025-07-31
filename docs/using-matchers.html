@@ -1,72 +1,122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Using Matchers | Fauji Docs</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-  <link rel="stylesheet" href="../styles/main.css">
-</head>
-<body>
-  <header>
-    <nav aria-label="Sidebar navigation">
-      <div class="logo">
-        <img src="../assets/fauji.svg" alt="fauji">
-      </div>
-      <menu>
-        <li>
-          <a href="/docs/getting-started.html">Docs</a>
-        </li>
-        <li>
-          <a href="https://github.com/opensly/fauji" target="_blank">GitHub</a>
-        </li>
-      </menu>
-    </nav>
-  </header>
-
-  <div class="page-container">
-    <aside>
-      <nav class="side-nav" aria-label="Sidebar navigation">
-        <ul>
-          <li><a href="/docs/getting-started.html">Getting Started</a></li>
-          <li><a href="/docs/using-matchers.html" class="active">Using Matchers</a></li>
-          <li><a href="/docs/async-testing.html">Async Testing</a></li>
-          <li><a href="/docs/setup-teardown.html">Setup & Teardown</a></li>
-          <li><a href="/docs/mock-functions.html">Mock Functions</a></li>
-          <li><a href="/docs/cli.html">CLI Reference</a></li>
-        </ul>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Using Matchers | Fauji Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    />
+    <link rel="stylesheet" href="../styles/main.css" />
+  </head>
+  <body>
+    <header>
+      <nav aria-label="Sidebar navigation">
+        <div class="logo">
+          <img src="../assets/fauji.svg" alt="fauji" />
+        </div>
+        <menu>
+          <li>
+            <a href="/docs/getting-started.html">Docs</a>
+          </li>
+          <li>
+            <a href="https://github.com/opensly/fauji" target="_blank"
+              >GitHub</a
+            >
+          </li>
+        </menu>
       </nav>
-    </aside>
-    <div class="page-content">
-      <div class="page-content-inner">
-        <h1>Using Matchers</h1>
-        <section>
-          <h2>Overview</h2>
-          <p>Matchers are the heart of Fauji's assertion system. They allow you to test values in expressive, readable ways. Fauji provides 40+ built-in matchers covering equality, type checking, collections, strings, numbers, errors, validation, and more.</p>
-          
-          <h3>Basic Matcher Syntax</h3>
-          <pre><code class="language-js">
-// Basic syntax
-expect(actualValue).matcherName(expectedValue);
+    </header>
 
-// With negation
-expect(actualValue).not.matcherName(expectedValue);
+    <div class="page-container">
+      <aside>
+        <nav class="side-nav" aria-label="Sidebar navigation">
+          <ul>
+            <li><a href="/docs/getting-started.html">Getting Started</a></li>
+            <li>
+              <a href="/docs/using-matchers.html" class="active"
+                >Using Matchers</a
+              >
+            </li>
+            <li><a href="/docs/async-testing.html">Async Testing</a></li>
+            <li><a href="/docs/mock-functions.html">Mock Functions</a></li>
+            <li><a href="/docs/setup-teardown.html">Setup & Teardown</a></li>
+            <li><a href="/docs/cli.html">CLI Reference</a></li>
+          </ul>
+        </nav>
+      </aside>
+      <div class="page-content">
+        <div class="page-content-inner">
+          <h1>Using Matchers</h1>
+          <section>
+            <h2>Overview</h2>
+            <p>
+              Matchers are the heart of Fauji's assertion system. They allow you
+              to test values in expressive, readable ways. Fauji provides 40+
+              built-in matchers:
+            </p>
+            <ul>
+              <li>toBe() - Strict equality</li>
+              <li>toEqual() - Deep equality</li>
+              <li>toBeCloseTo() - Number closeness</li>
+              <li>toSatisfy() - Custom predicate</li>
+              <li>toBeArray() - Array type</li>
+              <li>toBeBoolean() - Boolean type</li>
+              <li>toBeDate() - Date type</li>
+              <li>toBeFunction() - Function type</li>
+              <li>toBeInstanceOf() - Instance checking</li>
+              <li>toBeNumber() - Number type</li>
+              <li>toBeObject() - Object type</li>
+              <li>toBeRegExp() - RegExp type</li>
+              <li>toBeString() - String type</li>
+              <li>toBeNull() - Null check</li>
+              <li>toBeUndefined() - Undefined check</li>
+              <li>toBeDefined() - Defined check</li>
+              <li>toBeGreaterThan() - Greater than</li>
+              <li>toBeGreaterThanOrEqual() - Greater than or equal</li>
+              <li>toBeLessThan() - Less than</li>
+              <li>toBeLessThanOrEqual() - Less than or equal</li>
+              <li>toMatch() - String/regex matching</li>
+              <li>toContain() - Array/string contains</li>
+              <li>toMatchObject() - Object partial matching</li>
+              <li>toHaveProperty() - Property existence</li>
+              <li>toMatchSchema() - Schema validation</li>
+              <li>toHaveLength() - Array/string length</li>
+              <li>toBeEmpty() - Empty check</li>
+              <li>toThrow() - Function throws error</li>
+              <li>toBeValidEmail() - Email validation</li>
+              <li>toBeValidJSON() - JSON validation</li>
+              <li>toBeValidURL() - URL validation</li>
+              <li>toBeValidUUID() - UUID validation</li>
+              <li>toResolve() - Promise resolution</li>
+              <li>toReject() - Promise rejection</li>
+              <li>toHaveBeenCalled() - Function called</li>
+              <li>toHaveBeenCalledTimes() - Call count</li>
+              <li>toHaveBeenCalledWith() - Called with args</li>
+              <li>toHaveBeenCalledWithExactly() - Exact args</li>
+              <li>toHaveBeenLastCalledWith() - Last call args</li>
+              <li>toHaveBeenNthCalledWith() - Nth call args</li>
+              <li>toHaveReturned() - Function returned</li>
+              <li>toHaveReturnedWith() - Returned value</li>
+              <li>toHaveLastReturnedWith() - Last return value</li>
+              <li>toHaveNthReturnedWith() - Nth return value</li>
+              <li>toHaveThrown() - Function threw</li>
+              <li>toHaveThrownWith() - Threw specific error</li>
+            </ul>
+          </section>
 
-// Chaining (for complex assertions)
-expect(value).toBe(42).and.toBeNumber();</code></pre>
-        </section>
-
-        <section>
-          <h2>Equality Matchers</h2>
-          <p>Test different types of equality between values.</p>
-
-          <h4><code>toBe(expected)</code></h4>
-          <p>Tests strict equality using <code>Object.is()</code>. Use for primitives and reference equality.</p>
-          <pre><code class="language-js">
+          <section>
+            <h3><code>toBe(expected)</code></h3>
+            <p>Tests strict equality using <code>Object.is()</code>. Use for primitives and 
+              reference equality.</p>
+            <pre><code class="language-js">
 describe('toBe Examples', () => {
   test('primitive values', () => {
     expect(42).toBe(42);
@@ -87,67 +137,210 @@ describe('toBe Examples', () => {
     expect(same).toBe(obj); // Same reference
     expect({ a: 1 }).not.toBe({ a: 1 }); // Different objects
   });
-});</code></pre>
+});
+</code></pre>
+          </section>
 
-          <h4><code>toEqual(expected)</code></h4>
-          <p>Tests deep equality. Recursively compares objects and arrays.</p>
-          <pre><code class="language-js">
+          <section>
+            <h3><code>toEqual(expected)</code></h3>
+            <p>Tests deep equality. Recursively compares objects and arrays.</p>
+            <pre><code class="language-js">
 describe('toEqual Examples', () => {
-  test('deep object equality', () => {
-    expect({ a: 1, b: 2 }).toEqual({ a: 1, b: 2 });
-    expect({ 
-      user: { name: 'John', age: 30 },
-      settings: { theme: 'dark' }
-    }).toEqual({ 
-      user: { name: 'John', age: 30 },
-      settings: { theme: 'dark' }
-    });
+test('deep object equality', () => {
+  expect({ a: 1, b: 2 }).toEqual({ a: 1, b: 2 });
+  expect({
+    user: { name: 'John', age: 30 },
+    settings: { theme: 'dark' }
+  }).toEqual({
+    user: { name: 'John', age: 30 },
+    settings: { theme: 'dark' }
   });
+});
 
-  test('array equality', () => {
-    expect([1, 2, 3]).toEqual([1, 2, 3]);
-    expect([{ a: 1 }, { b: 2 }]).toEqual([{ a: 1 }, { b: 2 }]);
-  });
+test('array equality', () => {
+  expect([1, 2, 3]).toEqual([1, 2, 3]);
+  expect([{ a: 1 }, { b: 2 }]).toEqual([{ a: 1 }, { b: 2 }]);
+});
 
-  test('mixed nested structures', () => {
-    expect({
-      users: [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }],
-      meta: { total: 2, page: 1 }
-    }).toEqual({
-      users: [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }],
-      meta: { total: 2, page: 1 }
-    });
+test('mixed nested structures', () => {
+  expect({
+    users: [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }],
+    meta: { total: 2, page: 1 }
+  }).toEqual({
+    users: [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }],
+    meta: { total: 2, page: 1 }
   });
+});
 });</code></pre>
+          </section>
 
-          <h4><code>toBeCloseTo(expected, precision?)</code></h4>
-          <p>Tests numerical closeness for floating-point comparisons. Default precision is 2 decimal places.</p>
-          <pre><code class="language-js">
+          <section>
+            <h3><code>toBeCloseTo(expected, precision?)</code></h3>
+            <p>Tests numerical closeness for floating-point comparisons. Default precision is 
+              2 decimal places.</p>
+            <pre><code class="language-js">
 describe('toBeCloseTo Examples', () => {
-  test('floating point precision', () => {
-    expect(0.1 + 0.2).toBeCloseTo(0.3); // Default precision (2)
-    expect(0.1 + 0.2).toBeCloseTo(0.3, 2);
-    expect(Math.PI).toBeCloseTo(3.14159, 5);
-  });
+test('floating point precision', () => {
+  expect(0.1 + 0.2).toBeCloseTo(0.3); // Default precision (2)
+  expect(0.1 + 0.2).toBeCloseTo(0.3, 2);
+  expect(Math.PI).toBeCloseTo(3.14159, 5);
+});
 
-  test('handles edge cases', () => {
-    expect(NaN).toBeCloseTo(NaN); // NaN equals NaN
-    expect(Infinity).toBeCloseTo(Infinity);
-    expect(-Infinity).toBeCloseTo(-Infinity);
-  });
+test('handles edge cases', () => {
+  expect(NaN).toBeCloseTo(NaN); // NaN equals NaN
+  expect(Infinity).toBeCloseTo(Infinity);
+  expect(-Infinity).toBeCloseTo(-Infinity);
+});
 
-  test('precision parameter', () => {
-    expect(1.23456).toBeCloseTo(1.23, 2); // Passes
-    expect(1.23456).not.toBeCloseTo(1.23, 4); // Fails (too precise)
+test('precision parameter', () => {
+  expect(1.23456).toBeCloseTo(1.23, 2); // Passes
+  expect(1.23456).not.toBeCloseTo(1.23, 4); // Fails (too precise)
+});
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toSatisfy(predicate)</code></h3>
+            <p>Tests if a value satisfies a custom predicate function.</p>
+            <pre><code class="language-js">
+describe('toSatisfy Examples', () => {
+  test('custom predicate', () => {
+    expect(10).toSatisfy(x => x > 5);
   });
 });</code></pre>
-        </section>
+          </section>
 
-        <section>
-          <h2>Nullish Matchers</h2>
+          <section>
+            <h3><code>toBeArray()</code></h3>
+            <p>Tests if a value is an array.</p>
+            <pre><code class="language-js">
+describe('toBeArray Examples', () => {
+  test('array checks', () => {
+    expect([1, 2, 3]).toBeArray();
+    expect([]).toBeArray();
+    expect(new Array(5)).toBeArray();
+  });
+});</code></pre>
+          </section>
 
-          <h4><code>toBeNull()</code> / <code>toBeUndefined()</code> / <code>toBeDefined()</code></h4>
-          <pre><code class="language-js">
+          <section>
+            <h3><code>toBeBoolean()</code></h3>
+            <p>Tests if a value is a boolean.</p>
+            <pre><code class="language-js">
+describe('toBeBoolean Examples', () => {
+  test('boolean checks', () => {
+    expect(true).toBeBoolean();
+  });
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toBeDate()</code></h3>
+            <p>Tests if a value is a date.</p>
+            <pre><code class="language-js">
+describe('toBeDate Examples', () => {
+  test('date checks', () => {
+    expect(new Date()).toBeDate();
+    expect(new Date('2021-01-01')).toBeDate();
+    expect(new Date('invalid date')).not.toBeDate();
+  });
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toBeFunction()</code></h3>
+            <p>Tests if a value is a function.</p>
+            <pre><code class="language-js">
+describe('toBeFunction Examples', () => {
+  test('function checks', () => {
+    expect(() => {}).toBeFunction();
+    expect(function() {}).toBeFunction();
+    expect(new Function('return 1')).toBeFunction();
+  });
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toBeInstanceOf()</code></h3>
+            <p>Tests if a value is an instance of a class.</p>
+            <pre><code class="language-js">
+describe('Type Checking Matchers', () => {
+  test('complex type checking', () => {
+    class User {
+      constructor(name) { this.name = name; }
+    }
+    const user = new User('John');
+
+    expect(user).toBeInstanceOf(User);
+    expect(user).toBeInstanceOf(Object);
+    expect(user).not.toBeInstanceOf(Array);
+  });
+});</code></pre>
+          </section>
+
+          <section></section>
+            <h3><code>toBeNumber()</code></h3>
+            <p>Tests if a value is a number.</p>
+            <pre><code class="language-js">
+describe('toBeNumber Examples', () => {
+  test('number checks', () => {
+    expect(42).toBeNumber();
+    expect(new Number(42)).toBeNumber();
+    expect(Number.NaN).not.toBeNumber();
+  });
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toBeObject()</code></h3>
+            <p>Tests if a value is an object.</p>
+            <pre><code class="language-js">
+describe('toBeObject Examples', () => {
+  test('object checking', () => {
+    class User {
+      constructor(name) { this.name = name; }
+    }
+    const user = new User('John');
+  
+    expect(user).toBeObject();
+  });
+
+  test('object type checking', () => {
+    expect({}).toBeObject();
+    expect([]).not.toBeObject();
+    expect(null).not.toBeObject(); // null is not considered an object
+  });
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toBeRegExp()</code></h3>
+            <p>Tests if a value is a regular expression.</p>
+            <pre><code class="language-js">
+describe('toBeRegExp Examples', () => {
+  test('regex checks', () => {
+    expect(/pattern/).toBeRegExp();
+    expect(new RegExp('pattern')).toBeRegExp();
+  });
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toBeString()</code></h3>
+            <p>Tests if a value is a string.</p>
+            <pre><code class="language-js">
+describe('toBeString Examples', () => {
+  test('string checks', () => {
+    expect('hello').toBeString();
+    expect(new String('hello')).toBeString();
+  });
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toBeNull()</code></h3>
+            <p>Tests if a value is null.</p>
+            <pre><code class="language-js">
 describe('Nullish Matchers', () => {
   test('null checks', () => {
     expect(null).toBeNull();
@@ -155,13 +348,25 @@ describe('Nullish Matchers', () => {
     expect(0).not.toBeNull();
     expect('').not.toBeNull();
   });
+});</code></pre>
+          </section>
 
+          <section>
+            <h3><code>toBeUndefined()</code></h3>
+            <pre><code class="language-js">
+describe('Undefined Matcher', () => {
   test('undefined checks', () => {
     expect(undefined).toBeUndefined();
     expect(null).not.toBeUndefined();
     expect(0).not.toBeUndefined();
   });
+});</code></pre>
+          </section>
 
+          <section>
+            <h3><code>toBeDefined()</code></h3>
+            <pre><code>
+describe('Defined Matcher', () => {
   test('defined checks', () => {
     expect('value').toBeDefined();
     expect(0).toBeDefined();
@@ -170,93 +375,54 @@ describe('Nullish Matchers', () => {
     expect(undefined).not.toBeDefined();
   });
 });</code></pre>
+          </section>
 
-
-        </section>
-
-        <section>
-          <h2>Type Checking Matchers</h2>
-          <p>Verify the type of values with precision.</p>
-
-          <pre><code class="language-js">
-describe('Type Checking Matchers', () => {
-  test('primitive types', () => {
-    expect('hello').toBeString();
-    expect(42).toBeNumber();
-    expect(true).toBeBoolean();
-    expect(Symbol('test')).toBeSymbol();
-  });
-
-  test('object types', () => {
-    expect([1, 2, 3]).toBeArray();
-    expect({ key: 'value' }).toBeObject();
-    expect(() => {}).toBeFunction();
-    expect(new Date()).toBeDate();
-    expect(/pattern/).toBeRegExp();
-  });
-
-  test('complex type checking', () => {
-    class User {
-      constructor(name) { this.name = name; }
-    }
-    const user = new User('John');
-    
-    expect(user).toBeObject();
-    expect(user).toBeInstanceOf(User);
-    expect(user).toBeInstanceOf(Object);
-    expect(user).not.toBeInstanceOf(Array);
-  });
-
-  test('edge cases', () => {
-    expect(null).not.toBeObject(); // null is not considered an object
-    expect([]).toBeArray(); // Array detection
-    expect(new String('test')).toBeString(); // String object
-    expect(new Number(42)).toBeNumber(); // Number object
-  });
-});</code></pre>
-        </section>
-
-        <section>
-          <h2>Numerical Comparison Matchers</h2>
-
-          <pre><code class="language-js">
+          <section>
+            <h3><code>toBeGreaterThan()</code></h3>
+            <pre><code class="language-js">
 describe('Numerical Comparison Matchers', () => {
   test('greater than comparisons', () => {
     expect(10).toBeGreaterThan(5);
+  });
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toBeGreaterThanOrEqual()</code></h3>
+            <pre><code class="language-js">
+describe('Numerical Comparison Matchers', () => {
+  test('greater than or equal comparisons', () => {
     expect(10).toBeGreaterThanOrEqual(10);
     expect(10).toBeGreaterThanOrEqual(5);
   });
+});</code></pre>
+          </section>
 
+          <section>
+            <h3><code>toBeLessThan()</code></h3>
+            <pre><code class="language-js">
+describe('Numerical Comparison Matchers', () => {
   test('less than comparisons', () => {
     expect(5).toBeLessThan(10);
+  });
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toBeLessThanOrEqual()</code></h3>
+            <pre><code class="language-js">
+describe('Numerical Comparison Matchers', () => {
+  test('less than or equal comparisons', () => {
     expect(5).toBeLessThanOrEqual(5);
     expect(5).toBeLessThanOrEqual(10);
   });
-
-  test('special number values', () => {
-    expect(NaN).toBeNaN();
-    expect(Number.NaN).toBeNaN();
-    expect(parseInt('not-a-number')).toBeNaN();
-    
-    expect(Infinity).toBeGreaterThan(1000000);
-    expect(-Infinity).toBeLessThan(-1000000);
-  });
-
-  test('edge cases', () => {
-    expect(5).not.toBeGreaterThan(5); // Strict greater than
-    expect(5).not.toBeLessThan(5); // Strict less than
-    expect(5).toBeGreaterThanOrEqual(5);
-    expect(5).toBeLessThanOrEqual(5);
-  });
 });</code></pre>
-        </section>
+          </section>
 
-        <section>
-          <h2>String and Pattern Matchers</h2>
-
-          <h4><code>toMatch(pattern)</code></h4>
-          <p>Tests strings against patterns (strings or regular expressions).</p>
-          <pre><code class="language-js">
+          <section>
+            <h3><code>toMatch(pattern)</code></h3>
+            <p>Tests strings against patterns (strings or regular expressions).</p>
+            <pre><code class="language-js">
 describe('toMatch Examples', () => {
   test('string matching', () => {
     expect('Hello World').toMatch('World');
@@ -276,10 +442,12 @@ describe('toMatch Examples', () => {
     expect('Hello').toMatch(/hello/i); // Case insensitive regex
   });
 });</code></pre>
+          </section>
 
-          <h4><code>toContain(item)</code></h4>
-          <p>Tests if arrays contain items or strings contain substrings.</p>
-          <pre><code class="language-js">
+          <section>
+            <h3><code>toContain(item)</code></h3>
+            <p>Tests if arrays contain items or strings contain substrings.</p>
+            <pre><code class="language-js">
 describe('toContain Examples', () => {
   test('array containment', () => {
     expect([1, 2, 3, 4]).toContain(3);
@@ -299,82 +467,13 @@ describe('toContain Examples', () => {
     expect([1, NaN, 3]).toContain(NaN);
   });
 });</code></pre>
-        </section>
+          </section>
 
-        <section>
-          <h2>Collection and Length Matchers</h2>
-
-          <h4><code>toHaveLength(count)</code></h4>
-          <p>Tests the length of arrays, strings, and collection objects.</p>
-          <pre><code class="language-js">
-describe('toHaveLength Examples', () => {
-  test('array length', () => {
-    expect([1, 2, 3]).toHaveLength(3);
-    expect([]).toHaveLength(0);
-    expect(new Array(5)).toHaveLength(5);
-  });
-
-  test('string length', () => {
-    expect('hello').toHaveLength(5);
-    expect('').toHaveLength(0);
-    expect('🚀').toHaveLength(2); // Emoji can be 2 chars
-  });
-
-  test('collection objects', () => {
-    expect(new Set([1, 2, 3])).toHaveLength(3);
-    expect(new Map([['a', 1], ['b', 2]])).toHaveLength(2);
-    expect({ length: 5 }).toHaveLength(5); // Any object with length property
-  });
-});</code></pre>
-        </section>
-
-        <section>
-          <h2>Object Property Matchers</h2>
-
-          <h4><code>toHaveProperty(path, value?)</code></h4>
-          <p>Tests if objects have properties, optionally with specific values.</p>
-          <pre><code class="language-js">
-describe('toHaveProperty Examples', () => {
-  test('simple properties', () => {
-    const user = { name: 'John', age: 30 };
-    
-    expect(user).toHaveProperty('name');
-    expect(user).toHaveProperty('name', 'John');
-    expect(user).toHaveProperty('age', 30);
-    expect(user).not.toHaveProperty('email');
-  });
-
-  test('nested properties', () => {
-    const user = {
-      name: 'John',
-      address: {
-        street: '123 Main St',
-        city: 'New York',
-        coordinates: { lat: 40.7, lng: -74.0 }
-      }
-    };
-
-    expect(user).toHaveProperty('address.street');
-    expect(user).toHaveProperty('address.street', '123 Main St');
-    expect(user).toHaveProperty('address.coordinates.lat', 40.7);
-  });
-
-  test('array properties', () => {
-    const data = {
-      users: [
-        { name: 'John' },
-        { name: 'Jane' }
-      ]
-    };
-
-    expect(data).toHaveProperty('users.0.name', 'John');
-    expect(data).toHaveProperty('users.1.name', 'Jane');
-  });
-});</code></pre>
-
-          <h4><code>toMatchObject(expected)</code></h4>
-          <p>Tests partial object matching. The received object must contain all properties of the expected object.</p>
-          <pre><code class="language-js">
+          <section>
+            <h3><code>toMatchObject(expected)</code></h3>
+            <p>Tests partial object matching. The received object must contain all properties of 
+              the expected object.</p>
+            <pre><code class="language-js">
 describe('toMatchObject Examples', () => {
   test('partial matching', () => {
     const user = {
@@ -413,88 +512,55 @@ describe('toMatchObject Examples', () => {
   });
 });
 </code></pre>
-        </section>
+          </section>
 
-        <section>
-          <h2>Error and Exception Matchers</h2>
+          <section>
+            <h3><code>toHaveProperty(path, value?)</code></h3>
+            <p>Tests if objects have properties, optionally with specific values.</p>
+            <pre><code class="language-js">
+describe('toHaveProperty Examples', () => {
+  test('simple properties', () => {
+    const user = { name: 'John', age: 30 };
 
-          <h4><code>toThrow(error?)</code></h4>
-          <p>Tests if functions throw errors, optionally matching specific error types or messages.</p>
-          <pre><code class="language-js">
-describe('toThrow Examples', () => {
-  test('basic throwing', () => {
-    expect(() => {
-      throw new Error('Something went wrong');
-    }).toThrow();
-
-    expect(() => {
-      return 42; // Doesn't throw
-    }).not.toThrow();
+    expect(user).toHaveProperty('name');
+    expect(user).toHaveProperty('name', 'John');
+    expect(user).toHaveProperty('age', 30);
+    expect(user).not.toHaveProperty('email');
   });
 
-  test('specific error messages', () => {
-    expect(() => {
-      throw new Error('Division by zero');
-    }).toThrow('Division by zero');
+  test('nested properties', () => {
+    const user = {
+      name: 'John',
+      address: {
+        street: '123 Main St',
+        city: 'New York',
+        coordinates: { lat: 40.7, lng: -74.0 }
+      }
+    };
 
-    expect(() => {
-      throw new Error('Invalid input provided');
-    }).toThrow(/Invalid input/);
+    expect(user).toHaveProperty('address.street');
+    expect(user).toHaveProperty('address.street', '123 Main St');
+    expect(user).toHaveProperty('address.coordinates.lat', 40.7);
   });
 
-  test('error types', () => {
-    expect(() => {
-      throw new TypeError('Not a function');
-    }).toThrow(TypeError);
+  test('array properties', () => {
+    const data = {
+      users: [
+        { name: 'John' },
+        { name: 'Jane' }
+      ]
+    };
 
-    expect(() => {
-      throw new ReferenceError('Undefined variable');
-    }).toThrow(ReferenceError);
-  });
-
-  test('async throwing', () => {
-    // For async functions, see Async Testing documentation
-    expect(Promise.reject(new Error('Async error'))).rejects.toThrow();
-  });
-});</code></pre>
-        </section>
-
-        <section>
-          <h2>Validation Matchers</h2>
-          <p>Fauji includes built-in validation matchers for common data formats.</p>
-
-          <pre><code class="language-js">
-describe('Validation Matchers', () => {
-  test('JSON validation', () => {
-    expect('{"name": "John"}').toBeValidJSON();
-    expect('[1, 2, 3]').toBeValidJSON();
-    expect('invalid json').not.toBeValidJSON();
-  });
-
-  test('URL validation', () => {
-    expect('https://example.com').toBeValidURL();
-    expect('http://localhost:3000').toBeValidURL();
-    expect('not-a-url').not.toBeValidURL();
-  });
-
-  test('email validation', () => {
-    expect('user@example.com').toBeValidEmail();
-    expect('test.user+tag@domain.co.uk').toBeValidEmail();
-    expect('invalid-email').not.toBeValidEmail();
-  });
-
-  test('UUID validation', () => {
-    expect('550e8400-e29b-41d4-a716-446655440000').toBeValidUUID();
-    expect('not-a-uuid').not.toBeValidUUID();
+    expect(data).toHaveProperty('users.0.name', 'John');
+    expect(data).toHaveProperty('users.1.name', 'Jane');
   });
 });</code></pre>
-        </section>
+          </section>
 
-        <section>
-          <h2>Schema Matching</h2>
-          <p>Advanced schema validation for complex data structures.</p>
-
-          <pre><code class="language-js">
+          <section>
+            <h3><code>toMatchSchema(schema)</code></h3>
+            <p>Advanced schema validation for complex data structures.</p>
+            <pre><code class="language-js">
 describe('Schema Matching', () => {
   test('object schema validation', () => {
     const userSchema = {
@@ -538,33 +604,165 @@ describe('Schema Matching', () => {
     expect(order).toMatchSchema(orderSchema);
   });
 });</code></pre>
-        </section>
+          </section>
 
-        <section>
-          <h2>Negating Matchers</h2>
-          <p>All matchers support <code>.not</code> for negation, providing readable negative assertions.</p>
-          <pre><code class="language-js">
-describe('Negation Examples', () => {
-  test('basic negation', () => {
-    expect(2 + 2).not.toBe(5);
-    expect('hello').not.toMatch('world');
-    expect([1, 2, 3]).not.toContain(4);
-    expect({ a: 1 }).not.toHaveProperty('b');
+          <section>
+            <h3><code>toHaveLength(count)</code></h3>
+            <p>Tests the length of arrays, strings, and collection objects.</p>
+            <pre><code class="language-js">
+describe('toHaveLength Examples', () => {
+  test('array length', () => {
+    expect([1, 2, 3]).toHaveLength(3);
+    expect([]).toHaveLength(0);
+    expect(new Array(5)).toHaveLength(5);
   });
 
-  test('complex negation', () => {
-    expect('not-an-email').not.toBeValidEmail();
-    expect(() => { return 42; }).not.toThrow();
-    expect([]).not.toHaveLength(5);
+  test('string length', () => {
+    expect('hello').toHaveLength(5);
+    expect('').toHaveLength(0);
+    expect('🚀').toHaveLength(2); // Emoji can be 2 chars
+  });
+
+  test('collection objects', () => {
+    expect(new Set([1, 2, 3])).toHaveLength(3);
+    expect(new Map([['a', 1], ['b', 2]])).toHaveLength(2);
+    expect({ length: 5 }).toHaveLength(5); // Any object with length property
   });
 });</code></pre>
-        </section>
+          </section>
 
-        <section>
-          <h2>Custom Matchers</h2>
-          <p>Extend Fauji with your own domain-specific matchers for better test readability.</p>
+          <section>
+            <h3><code>toBeEmpty()</code></h3>
+            <pre><code class="language-js">
+describe('toBeEmpty Examples', () => {
+  test('empty checks', () => {
+    expect([]).toBeEmpty();
+    expect('').toBeEmpty();
+    expect({}).toBeEmpty();
+    expect(new Set()).toBeEmpty();
+    expect(new Map()).toBeEmpty();
+  });
+});</code></pre>
+          </section>
 
-          <pre><code class="language-js">
+          <section>
+            <h3><code>toThrow(error?)</code></h3>
+            <p>Tests if functions throw errors, optionally matching specific error types or messages.</p>
+            <pre><code class="language-js">
+describe('toThrow Examples', () => {
+  test('basic throwing', () => {
+    expect(() => {
+      throw new Error('Something went wrong');
+    }).toThrow();
+
+    expect(() => {
+      return 42; // Doesn't throw
+    }).not.toThrow();
+  });
+
+  test('specific error messages', () => {
+    expect(() => {
+      throw new Error('Division by zero');
+    }).toThrow('Division by zero');
+
+    expect(() => {
+      throw new Error('Invalid input provided');
+    }).toThrow(/Invalid input/);
+  });
+
+  test('error types', () => {
+    expect(() => {
+      throw new TypeError('Not a function');
+    }).toThrow(TypeError);
+
+    expect(() => {
+      throw new ReferenceError('Undefined variable');
+    }).toThrow(ReferenceError);
+  });
+
+  test('async throwing', () => {
+    // For async functions, see Async Testing documentation
+    expect(Promise.reject(new Error('Async error'))).rejects.toThrow();
+  });
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toBeValidEmail()</code></h3>
+            <pre><code class="language-js">
+describe('toBeValidEmail Examples', () => {
+  test('email validation', () => {
+    expect('user@example.com').toBeValidEmail();
+    expect('test.user+tag@domain.co.uk').toBeValidEmail();
+    expect('invalid-email').not.toBeValidEmail();
+  });
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toBeValidJSON()</code></h3>
+            <pre><code class="language-js">
+describe('toBeValidJSON Examples', () => {
+  test('JSON validation', () => {
+    expect('{"name": "John"}').toBeValidJSON();
+    expect('[1, 2, 3]').toBeValidJSON();
+    expect('invalid json').not.toBeValidJSON();
+  });
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toBeValidURL()</code></h3>
+            <pre><code class="language-js">
+describe('toBeValidURL Examples', () => {
+  test('URL validation', () => {
+    expect('https://example.com').toBeValidURL();
+    expect('not-a-url').not.toBeValidURL();
+  });
+});</code></pre>
+          </section>
+
+          <section>
+            <h3><code>toBeValidUUID()</code></h3>
+            <pre><code class="language-js">
+describe('toBeValidUUID Examples', () => {
+  test('UUID validation', () => {
+    expect('550e8400-e29b-41d4-a716-446655440000').toBeValidUUID();
+    expect('not-a-uuid').not.toBeValidUUID();
+  });
+});</code></pre>
+          </section>
+
+
+          <section>
+            <h3>Async Matchers</h3>
+            <p>
+              For detailed information about async matchers:
+              <code>toResolve</code>, <code>toReject</code>, see the
+              <a href="/docs/async-testing.html">Async Testing</a> guide.
+            </p>
+          </section>
+
+          <section></section>
+            <h3>Mock Functions</h3>
+            <p>
+              For detailed information about mock functions:
+              <code>toHaveBeenCalled()</code>, <code>toHaveBeenCalledWith()</code>, 
+              <code>toHaveBeenCalledTimes()</code>, <code>toHaveBeenCalledWithExactly()</code>, 
+              <code>toHaveBeenLastCalledWith()</code>, <code>toHaveBeenNthCalledWith()</code>, 
+              <code>toHaveReturned()</code>, <code>toHaveReturnedWith()</code>, 
+              <code>toHaveLastReturnedWith()</code>, <code>toHaveNthReturnedWith()</code>, 
+              <code>toHaveThrown()</code>, <code>toHaveThrownWith()</code>,
+              <code>toHaveLastReturnedWith()</code>, <code>toHaveNthReturnedWith()</code>, 
+              <code>toHaveThrown()</code>, <code>toHaveThrownWith()</code>,
+              see the <a href="/docs/mock-functions.html">Mock Functions</a> guide.
+            </p>
+          </section>
+
+          <section>
+            <h3>Custom Matchers</h3>
+            <p>Extend Fauji with your own domain-specific matchers for better test readability.</p>
+            <pre><code class="language-js">
 import { addMatchers } from 'fauji';
 
 // Define custom matchers
@@ -572,13 +770,13 @@ addMatchers({
   toBeDivisibleBy(received, divisor) {
     return received % divisor === 0;
   },
-  
+
   toBeValidCreditCard(received) {
     // Simplified Luhn algorithm check
     const cleaned = received.replace(/\s/g, '');
     return /^\d{13,19}$/.test(cleaned);
   },
-  
+
   toHaveExactKeys(received, expectedKeys) {
     const actualKeys = Object.keys(received).sort();
     const expected = expectedKeys.sort();
@@ -604,113 +802,34 @@ describe('Custom Matchers', () => {
     expect({ a: 1, b: 2 }).not.toHaveExactKeys(['a', 'b', 'c']);
   });
 });</code></pre>
-          <div class="note">
-            <strong>Best Practice:</strong> Custom matchers extend <code>expect</code> globally for all your tests. Define them in a setup file that runs before your tests.
-          </div>
-        </section>
-
-        <section>
-          <h2>Practical Usage Patterns</h2>
-
-          <h3>Testing API Responses</h3>
-          <pre><code class="language-js">
-describe('API Response Testing', () => {
-  test('successful user creation', () => {
-    const response = {
-      success: true,
-      user: {
-        id: 'user-123',
-        name: 'John Doe',
-        email: 'john@example.com',
-        createdAt: '2023-01-01T00:00:00Z'
-      },
-      meta: {
-        timestamp: Date.now()
-      }
-    };
-
-    expect(response).toMatchObject({
-      success: true,
-      user: {
-        name: 'John Doe',
-        email: 'john@example.com'
-      }
-    });
-    expect(response.user.id).toBeString();
-    expect(response.user.email).toBeValidEmail();
-    expect(response.meta.timestamp).toBeNumber();
-  });
-});</code></pre>
-
-          <h3>Testing Form Validation</h3>
-          <pre><code class="language-js">
-describe('Form Validation', () => {
-  test('validates user registration form', () => {
-    const formData = {
-      username: 'john_doe',
-      email: 'john@example.com',
-      password: 'securePassword123',
-      age: 25
-    };
-
-    expect(formData.username).toMatch(/^[a-zA-Z0-9_]+$/);
-    expect(formData.email).toBeValidEmail();
-    expect(formData.password).toHaveLength(15);
-    expect(formData.password).toMatch(/[A-Z]/); // Has uppercase
-    expect(formData.password).toMatch(/[0-9]/); // Has numbers
-    expect(formData.age).toBeGreaterThanOrEqual(18);
-  });
-});</code></pre>
-
-          <h3>Testing Data Transformations</h3>
-          <pre><code class="language-js">
-describe('Data Transformation', () => {
-  test('transforms user data correctly', () => {
-    const rawData = {
-      firstName: 'John',
-      lastName: 'Doe',
-      birthYear: 1990,
-      isActive: 1
-    };
-
-    const transformed = transformUser(rawData);
-
-    expect(transformed).toMatchObject({
-      fullName: 'John Doe',
-      age: expect.toBeNumber(),
-      active: true
-    });
-    expect(transformed.age).toBeGreaterThan(0);
-    expect(transformed.fullName).toContain('John');
-    expect(transformed.active).toBeBoolean();
-  });
-});</code></pre>
-        </section>
-
-        <section>
-          <h2>Best Practices</h2>
-          <ul>
-            <li><strong>Choose the right matcher:</strong> Use <code>toBe</code> for primitives, <code>toEqual</code> for objects</li>
-            <li><strong>Be specific:</strong> <code>toBeNull()</code> is clearer than <code>toBe(null)</code></li>
-            <li><strong>Use descriptive assertions:</strong> <code>toHaveLength(3)</code> is better than <code>toEqual(3)</code> for array length</li>
-            <li><strong>Leverage negation:</strong> <code>.not.toContain()</code> for clear negative assertions</li>
-            <li><strong>Custom matchers for domain logic:</strong> Create matchers that express your business rules</li>
-            <li><strong>Combine matchers:</strong> Use multiple assertions to thoroughly verify complex objects</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>Complete Matcher Reference</h2>
-          <p>For detailed information about async matchers (<code>toResolve</code>, <code>toReject</code>), see the <a href="/docs/async-testing.html">Async Testing</a> guide.</p>
-          <p>For spy and mock matchers (<code>toHaveBeenCalled</code>, <code>toHaveBeenCalledWith</code>), see the <a href="/docs/mock-functions.html">Mock Functions</a> guide.</p>
-        </section>
+            <div class="note">
+              <strong>Best Practice:</strong> Custom matchers extend
+              <code>expect</code> globally for all your tests. Define them in a
+              setup file that runs before your tests.
+            </div>
+          </section>
+          
+        </div>
+        <footer>
+          <p>
+            Copyright
+            <a target="_blank" href="https://opensly.in">Opensly</a> and
+            <a
+              target="_blank"
+              href="https://github.com/opensly/fauji/graphs/contributors"
+              >fauji contributors</a
+            >. All rights reserved.
+          </p>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+          <script>
+            document.addEventListener("DOMContentLoaded", () => {
+              document.querySelectorAll("pre code").forEach((el) => {
+                hljs.highlightElement(el);
+              });
+            });
+          </script>
+        </footer>
       </div>
-      <footer>
-        <p>Copyright <a target="_blank" href="https://opensly.in">Opensly</a> and <a target="_blank" href="https://github.com/opensly/fauji/graphs/contributors">fauji contributors</a>. All rights reserved.</p>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-        <script>document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('pre code').forEach((el)=>{hljs.highlightElement(el);});});</script>
-      </footer>
     </div>
-  </div>
-</body>
-</html> 
+  </body>
+</html>
